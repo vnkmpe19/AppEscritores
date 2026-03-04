@@ -1,26 +1,29 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
+/* Estilo para la barra de desplazamiento horizontal */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 8px; /* Grosor de la barra */
+}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #FDF5F5; /* Color del fondo de la barra */
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #FFB7C5; /* Color del "carritoo" (rosa pastel) */
+  border-radius: 10px;
+  border: 2px solid #FDF5F5; /* Espacio alrededor del carrito */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #F497A9; /* Color al pasar el mouse */
 }
