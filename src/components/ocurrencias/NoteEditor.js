@@ -23,14 +23,14 @@ export default function NoteEditor({ onSave, onClose, data }) {
   return (
     <div className="bg-white w-[350px] md:w-[500px] rounded-[32px] shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[80vh]">
       <div className="p-8 space-y-6 overflow-y-auto">
-        {/* TÍTULO */}
+      
         <input 
           type="text" placeholder="Título..." 
           className="w-full font-black text-2xl outline-none placeholder:text-slate-200"
           value={title} onChange={(e) => setTitle(e.target.value)}
         />
 
-        {/* IMAGEN PREVIA */}
+        
         {image && (
           <div className="relative rounded-2xl overflow-hidden shadow-md">
             <img src={image} className="w-full h-44 object-cover" alt="Adjunto" />
@@ -38,7 +38,6 @@ export default function NoteEditor({ onSave, onClose, data }) {
           </div>
         )}
 
-        {/* TEXTO LIBRE */}
         <textarea 
           placeholder="Escribe tu idea principal aquí..."
           className="w-full min-h-[100px] outline-none resize-none text-slate-600 font-medium leading-relaxed"
@@ -48,7 +47,7 @@ export default function NoteEditor({ onSave, onClose, data }) {
           }}
         />
 
-        {/* LISTA DE TAREAS (Si existen items) */}
+      
         {listItems.length > 0 && (
           <div className="space-y-2 border-t pt-4 border-slate-50">
             <p className="text-[10px] font-black text-slate-300 tracking-widest uppercase mb-2">Checklist</p>
@@ -76,13 +75,13 @@ export default function NoteEditor({ onSave, onClose, data }) {
         )}
       </div>
 
-      {/* BARRA DE HERRAMIENTAS */}
+   
       <div className="bg-slate-50/80 px-8 py-4 flex justify-between items-center">
         <div className="flex gap-5 text-slate-400">
-          {/* Botón para añadir Checklist sin borrar el texto */}
+          
           <button onClick={addListItem} title="Añadir Checklist" className="hover:text-[#FF5C5C] transition-colors"><CheckSquare size={20} /></button>
           
-          {/* Botón para Imagen */}
+          
           <button onClick={() => fileInputRef.current.click()} title="Añadir Imagen" className="hover:text-[#FF5C5C] transition-colors">
             <ImageIcon size={20} />
             <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />

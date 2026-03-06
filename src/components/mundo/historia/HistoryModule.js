@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Plus, Edit, Trash2, User, Sparkles, BookOpen, Globe, X } from 'lucide-react';
 
-// --- DATOS INICIALES ---
+
 const INITIAL_EVENTS = [
   { id: 1, year: 'AÑO 0 - 1000', title: 'La Primera Era', desc: 'El nacimiento de la tierra y los primeros linajes. La forja de las montañas.' },
   { id: 2, year: 'AÑO 1001 - 1550', title: 'Grandes Guerras', desc: 'Cismas territoriales que definieron las fronteras actuales.' }
@@ -25,18 +25,17 @@ export default function HistoryModule() {
   const [figures, setFigures] = useState(INITIAL_FIGURES);
   const [artifacts, setArtifacts] = useState(INITIAL_ARTIFACTS);
 
-  // Estados del Modal
+  
   const [showModal, setShowModal] = useState(false);
   const [modalConfig, setModalConfig] = useState({ type: '', title: '' });
   const [editingItem, setEditingItem] = useState(null);
 
-  // Estados del Formulario
   const [formName, setFormName] = useState('');
-  const [formSubtitle, setFormSubtitle] = useState(''); // Usa para Año o Título/Tipo
+  const [formSubtitle, setFormSubtitle] = useState(''); 
   const [formDesc, setFormDesc] = useState('');
   const [formImage, setFormImage] = useState('');
 
-  // --- FUNCIONES CRUD ---
+  
   const openModal = (type, title, item = null) => {
     setModalConfig({ type, title });
     setEditingItem(item);
@@ -94,7 +93,7 @@ export default function HistoryModule() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12 pb-20">
       
-      {/* ENCABEZADO */}
+     
       <div className="bg-white p-10 rounded-[40px] shadow-xl border border-slate-100 relative overflow-hidden group">
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#E8F5A2]/30 rounded-full blur-3xl pointer-events-none" />
         <div className="flex items-center gap-5 relative z-10">
@@ -112,9 +111,9 @@ export default function HistoryModule() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         
-        {/* COLUMNA IZQUIERDA: LÍNEA DE TIEMPO */}
+        
         <div className="lg:col-span-4 space-y-8 relative">
-          {/* Línea vertical decorativa */}
+          
           <div className="absolute left-[19px] top-12 bottom-4 w-1 bg-slate-100 rounded-full" />
           
           <div className="flex justify-between items-center pr-4">
@@ -148,10 +147,10 @@ export default function HistoryModule() {
           </div>
         </div>
 
-        {/* COLUMNA DERECHA: FIGURAS Y ARTEFACTOS */}
+       
         <div className="lg:col-span-8 space-y-12">
           
-          {/* FIGURAS HISTÓRICAS */}
+         
           <section>
             <div className="flex justify-between items-center mb-6 bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
               <div className="flex items-center gap-3">
@@ -185,7 +184,7 @@ export default function HistoryModule() {
             </div>
           </section>
 
-          {/* ARTEFACTOS LEGENDARIOS */}
+          
           <section>
             <div className="flex justify-between items-center mb-6 bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
               <div className="flex items-center gap-3">
@@ -218,7 +217,7 @@ export default function HistoryModule() {
         </div>
       </div>
 
-      {/* --- MODAL INTELIGENTE --- */}
+      
       <AnimatePresence>
         {showModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -235,7 +234,7 @@ export default function HistoryModule() {
                 </div>
                 
                 <div className="space-y-6">
-                  {/* Nombre / Título */}
+                 
                   <div>
                     <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
                       {modalConfig.type === 'event' ? 'Título del Evento' : 'Nombre'}
@@ -243,7 +242,7 @@ export default function HistoryModule() {
                     <input type="text" value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="Escribe aquí..." className="w-full bg-slate-50 border-none rounded-2xl p-4 outline-none focus:ring-2 focus:ring-[#FFB7C5] transition-all font-bold shadow-inner text-sm" />
                   </div>
                   
-                  {/* Subtítulo dinámico (Año, Título de Figura, Tipo de Artefacto) */}
+                
                   <div>
                     <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
                       {modalConfig.type === 'event' && 'Época / Año'}
@@ -253,7 +252,6 @@ export default function HistoryModule() {
                     <input type="text" value={formSubtitle} onChange={(e) => setFormSubtitle(e.target.value)} placeholder="Ej. Año 200, El Sabio, Espada Sagrada..." className="w-full bg-slate-50 border-none rounded-2xl p-4 outline-none focus:ring-2 focus:ring-[#FFB7C5] transition-all text-sm shadow-inner font-medium" />
                   </div>
 
-                  {/* Descripción (No aplica para artefactos en este diseño visual) */}
                   {modalConfig.type !== 'artifact' && (
                     <div>
                       <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Descripción Histórica</label>
@@ -261,7 +259,6 @@ export default function HistoryModule() {
                     </div>
                   )}
 
-                  {/* Imagen (Para figuras y artefactos) */}
                   {modalConfig.type !== 'event' && (
                     <div>
                       <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">URL de Imagen</label>

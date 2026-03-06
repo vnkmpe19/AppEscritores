@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Playfair_Display } from 'next/font/google';
 
-// Configuración de la fuente para que se vea elegante como en tu imagen
 const playfair = Playfair_Display({ 
   subsets: ['latin'],
   weight: ['700'], 

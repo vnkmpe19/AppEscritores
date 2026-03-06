@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Sidebar from '@/components/common/Sidebar';
 import Header from '@/components/common/Header';
 import CharacterModule from '@/components/CharacterModule';
-import Bombilla from '@/components/common/Bombilla'; // El componente de tu compañera
+import Bombilla from '@/components/common/Bombilla'; 
 
 export default function PersonajesPage() {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);

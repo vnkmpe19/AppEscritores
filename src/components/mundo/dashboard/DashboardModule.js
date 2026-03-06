@@ -23,7 +23,6 @@ export default function DashboardModule() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 xl:grid-cols-3 gap-6 pb-20">
       
-      {/* MAPA DEL MUNDO */}
       <div className="xl:col-span-2 bg-white rounded-[40px] p-8 shadow-xl border border-slate-100 flex flex-col h-[400px]">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-black text-slate-800">Mapa del Mundo</h2>
@@ -49,7 +48,6 @@ export default function DashboardModule() {
         </div>
       </div>
 
-      {/* IDEAS & PROMPTS */}
       <div className="xl:col-span-1 bg-[#BFD7ED] rounded-[40px] p-8 shadow-xl flex flex-col gap-4 border border-[#BFD7ED]">
         <h3 className="text-xl font-black text-slate-800 mb-2">Ideas</h3>
         <div className="space-y-4 flex-1">
@@ -68,7 +66,6 @@ export default function DashboardModule() {
         </button>
       </div>
 
-      {/* FACCIONES & RELACIONES */}
       <div className="xl:col-span-1 bg-white rounded-[40px] p-8 shadow-xl border border-slate-100 flex flex-col">
         <h3 className="text-xl font-black text-slate-800 mb-6">Facciones & Relaciones</h3>
         <div className="space-y-6 flex-1 flex flex-col justify-center">
@@ -106,7 +103,6 @@ export default function DashboardModule() {
         </div>
       </div>
 
-      {/* LÍNEA DE TIEMPO */}
       <div className="xl:col-span-2 bg-white rounded-[40px] p-8 shadow-xl border border-slate-100 flex flex-col">
         <h3 className="text-xl font-black text-slate-800 mb-8">Línea de Tiempo</h3>
         <div className="relative flex-1 flex items-center px-4 md:px-12">

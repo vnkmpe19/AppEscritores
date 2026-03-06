@@ -7,7 +7,6 @@ import {
   Activity, Bell, Sun, TrendingUp, X, MapPin, Image as ImageIcon, Sparkles, BookOpen, Users
 } from 'lucide-react';
 
-// --- DATOS INICIALES ---
 const INITIAL_ETHNICITIES = [
   { id: 1, name: 'Los Kaltari', desc: 'Nómadas conocidos por su maestría en la orfebrería y sus túnicas de seda teñida.', region: 'DESIERTO DE AMBAR', image: 'https://picsum.photos/seed/kaltari/400/300' },
   { id: 2, name: 'Guardianes de Skald', desc: 'Guerreros robustos de las montañas, sus vestiduras incorporan pieles de osos blancos.', region: 'CUMBRES NEVADAS', image: 'https://picsum.photos/seed/skald/400/300' },
@@ -39,7 +38,6 @@ export default function CulturesModule() {
   const [modalConfig, setModalConfig] = useState({ type: '', title: '' });
   const [editingEntity, setEditingEntity] = useState(null);
 
-  // Formulario
   const [formName, setFormName] = useState('');
   const [formDesc, setFormDesc] = useState('');
   const [formRegion, setFormRegion] = useState(''); 
@@ -123,7 +121,6 @@ export default function CulturesModule() {
         </div>
       </div>
 
-      {/* --- lo de las ETNIAS --- */}
       <section>
         <div className="flex justify-between items-center mb-8 pr-4">
           <h3 className="text-3xl font-black text-slate-800 flex items-center gap-3">
@@ -167,7 +164,6 @@ export default function CulturesModule() {
         </div>
       </section>
 
-      {/* --- RITOS Y TRADCCIONCITAS --- */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         
         <section className="space-y-6">
@@ -225,7 +221,6 @@ export default function CulturesModule() {
 
       </div>
 
-      {/* --- RELIGION --- */}
       <section className="pt-6">
         <div className="flex items-center gap-3 mb-8">
           <Activity className="text-[#FF5C5C]" size={32} />
@@ -275,7 +270,6 @@ export default function CulturesModule() {
                     <input type="text" value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="Ej. Los Kaltari..." className="w-full bg-slate-50 border-none rounded-2xl p-4 outline-none focus:ring-2 focus:ring-[#FFB703]/20 transition-all font-bold shadow-inner" />
                   </div>
                   
-                  {/* Campo de Región (Solo visible al crear Etnia) */}
                   {modalConfig.type === 'ethnicity' && (
                     <div>
                       <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Región Geográfica</label>

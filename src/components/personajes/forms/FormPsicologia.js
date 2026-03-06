@@ -48,6 +48,7 @@ export default function FormPsicologia({ personaje }) {
         </h4>
         {/* Usamos el componente SectionTextarea con clases personalizadas si es posible, 
             o el textarea nativo corregido para que no rompa el diseño */}
+            {/*Vavava */}
         <textarea 
           placeholder="Ese secreto que destruiría su vida si saliera a la luz..." 
           className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-medium text-slate-200 outline-none focus:ring-2 focus:ring-[#FFB7C5] min-h-[100px] resize-none"

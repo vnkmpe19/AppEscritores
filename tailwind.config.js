@@ -8,7 +8,7 @@ module.exports = {
         'menta-web': '#AFEFEF',
         'azul-personajes': '#B4DDEB',
         'rosa-proyectos': '#F1C9C6',
-        'bg-ocurrencias': '#FFF5F5', // Fondo rosado muy pálido
+        'bg-ocurrencias': '#FFF5F5', 
         'celeste-sidebar': '#BFD7ED',
         'rosa-search': '#FFB7C5',
         'crema-bg': '#FDF5F5',     

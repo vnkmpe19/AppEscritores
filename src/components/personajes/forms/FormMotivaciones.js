@@ -7,7 +7,7 @@ export default function FormMotivaciones({ personaje }) {
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
       
-      {/* SECCIÓN 1: EL MOTOR (Objetivo y Necesidad) */}
+     
       <div className="bg-white/40 p-8 rounded-[40px] border border-slate-100 shadow-sm space-y-6">
         <h4 className="flex items-center gap-2 text-xs font-black uppercase text-slate-500 tracking-[0.2em] mb-4 text-left">
           <Target size={18} className="text-[#FF5C5C]"/> El Motor de la Trama
@@ -20,7 +20,7 @@ export default function FormMotivaciones({ personaje }) {
         </div>
       </div>
 
-      {/* SECCIÓN 2: LOS LÍMITES (Dilemas y Sacrificios) */}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-slate-100">
         <div className="bg-[#E8F5A2]/20 p-6 rounded-[35px] border border-[#E8F5A2]/40 text-left">
           <div className="flex items-center gap-2 mb-4 text-slate-600">
@@ -57,7 +57,6 @@ export default function FormMotivaciones({ personaje }) {
         </div>
       </div>
 
-      {/* SECCIÓN 3: EL DESTINO (Transformación) */}
       <div className="bg-slate-900 p-8 rounded-[40px] text-white space-y-8 shadow-xl text-left">
         <h4 className="flex items-center gap-2 text-xs font-black uppercase text-slate-400 tracking-[0.2em]">
           <Zap size={18} className="text-[#E8F5A2]"/> El Punto de Inflexión

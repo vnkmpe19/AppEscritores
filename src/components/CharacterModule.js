@@ -24,7 +24,6 @@ export default function CharacterModule() {
   const [newImage, setNewImage] = useState(null);
   const fileInputRef = useRef(null);
 
-  // Cargar personajes al iniciar
   useEffect(() => {
     const saved = localStorage.getItem('mis_personajes');
     if (saved) {
@@ -60,7 +59,7 @@ export default function CharacterModule() {
   };
 
   const deleteCharacter = (e, id) => {
-    e.stopPropagation(); // Evita abrir la ficha al borrar
+    e.stopPropagation();
     if (confirm("¿Eliminar este personaje?")) {
       const updated = characters.filter(c => c.id !== id);
       setCharacters(updated);
@@ -82,7 +81,6 @@ export default function CharacterModule() {
 
             {characters.map(c => (
               <div key={c.id} className="snap-center shrink-0 relative group" onClick={() => { setSelected(c); setView('quick'); }}>
-                {/* BOTÓN ELIMINAR */}
                 <button 
                   onClick={(e) => deleteCharacter(e, c.id)}
                   className="absolute top-2 right-2 z-30 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:scale-110"
@@ -113,7 +111,6 @@ export default function CharacterModule() {
           <motion.div key="q" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setView('gallery')}
                       className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/10 backdrop-blur-sm">
             <div onClick={(e) => e.stopPropagation()} className="w-full max-w-5xl flex flex-col md:flex-row items-center relative py-10">
-              {/* Marco y Datos ... */}
               <div className="relative z-20 w-72 h-96 md:w-[350px] md:h-[480px] shrink-0 transform -rotate-1">
                 <img src={selected.marco} className="w-full h-full object-contain drop-shadow-2xl" />
                 <div className="absolute inset-0 flex items-center justify-center p-14 font-serif font-black text-9xl text-[#B9D9EB]/20 italic">
@@ -125,7 +122,6 @@ export default function CharacterModule() {
                 <h2 className="text-5xl font-serif font-black text-slate-900 mb-2">{selected.nombre}</h2>
                 <p className="text-xl font-serif italic text-slate-800 border-l-4 border-[#F497A9] pl-6 mb-8 italic">"{selected.frase}"</p>
                 
-                {/* BOTÓN MÁS INFORMACIÓN (CORREGIDO) */}
                 <div className="mt-auto flex justify-between items-end">
                    <Link 
                     href={`/personajes/${selected.id}`} 
@@ -141,8 +137,8 @@ export default function CharacterModule() {
         )}
       </AnimatePresence>
 
-      {/* MODAL CREAR (Igual que antes pero con handleDelete) */}
-      {/* ... (Tu código de modal aquí) ... */}
+      
+      
       <AnimatePresence>
         {showCreateModal && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/20 backdrop-blur-md">

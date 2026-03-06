@@ -6,11 +6,11 @@ import {
   TrendingUp, Gem, Ship, Sparkles, Plus, Trash2, X, Edit, Cog, Crown, Users, Shield, User
 } from 'lucide-react';
 
-// IMPORTAMOS LOS COMPONENTES NIETOS
+
 import TarjetaGobierno from './TarjetaGobierno';
 import NodoJerarquia from './NodoJerarquia';
 
-// Helper de iconos principal
+
 const obtenerIcono = (nombreIcono, tamaño = 20) => {
   switch (nombreIcono) {
     case 'Crown': return <Crown size={tamaño} />;
@@ -27,7 +27,7 @@ const obtenerIcono = (nombreIcono, tamaño = 20) => {
 };
 
 export default function SociopoliticalModule() {
-  // --- ESTADOS ---
+  
 
   const [tiposGobierno, setTiposGobierno] = useState([
     { id: 'g1', titulo: 'Monarquía', descripcion: 'Poder absoluto heredado por linaje de sangre.', icono: 'Crown' },
@@ -136,7 +136,6 @@ export default function SociopoliticalModule() {
         </div>
       </div>
 
-      {/* TIPOS DE GOBIERNO  */}
       <section>
         <div className="flex justify-between items-center mb-8 pr-4">
           <div className="flex items-center gap-3">
@@ -157,7 +156,6 @@ export default function SociopoliticalModule() {
         </div>
       </section>
 
-      {/* JERARQUÍA SOCIAL */}
       <section>
         <div className="flex items-center gap-3 mb-8">
           <h3 className="text-2xl font-black text-slate-800">Jerarquía Social</h3>
@@ -171,7 +169,7 @@ export default function SociopoliticalModule() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         
-        {/* Leyw */}
+        
         <section>
           <div className="flex items-center gap-3 mb-8"><Scale className="text-[#FF5C5C]" size={28} /><h3 className="text-2xl font-black text-slate-800">Leyes y Justicia</h3></div>
           <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-xl">
@@ -202,7 +200,7 @@ export default function SociopoliticalModule() {
           </div>
         </section>
 
-        {/* ECONOMÍA */}
+        
         <section>
           <div className="flex items-center gap-3 mb-8"><TrendingUp className="text-[#F97316]" size={28} /><h3 className="text-2xl font-black text-slate-800">Motores Económicos</h3></div>
           <div className="space-y-4">
@@ -233,7 +231,7 @@ export default function SociopoliticalModule() {
         </section>
       </div>
 
-      {/* MODAL INTELIGENTE UNIFICADO - DYNAMIC COLORS BASED ON TYPE */}
+      
       <AnimatePresence>
         {mostrarModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">

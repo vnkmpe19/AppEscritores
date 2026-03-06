@@ -125,7 +125,6 @@ export default function MundoPage() {
 
       <main className={`flex-1 transition-all duration-300 ${isSidebarExpanded ? 'ml-64' : 'ml-24'} p-4 md:p-8`}>
         
-        {/* CORRECCIÓN: showSearch añadido para ocultar el buscador */}
         <Header 
           user={{name: "Patito Sexy"}} 
           onSearch={handleSearch} 
@@ -136,7 +135,6 @@ export default function MundoPage() {
         <div className="max-w-[1400px] mx-auto relative min-h-[500px]">
           <AnimatePresence mode="wait">
             
-            {/* GRID DE MUNDOS */}
             {!selectedWorld && (
               <motion.div key="grid-mundos" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
                 <div className="flex justify-between items-center mb-8">
@@ -172,11 +170,9 @@ export default function MundoPage() {
               </motion.div>
             )}
 
-            {/* DENTRO DEL MUNDO */}
             {selectedWorld && (
               <motion.div key="detalle-mundo" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex flex-col lg:flex-row gap-8">
                 
-                {/* MENU INTERNO */}
                 <div className="w-full lg:w-64 flex-shrink-0 space-y-6">
                   <button onClick={handleCloseDetail} className="flex items-center gap-2 text-slate-500 hover:text-[#FF5C5C] font-bold mb-6 transition-colors">
                     <ChevronLeft size={20} /> Volver a Mundos
@@ -207,7 +203,6 @@ export default function MundoPage() {
                   </div>
                 </div>
 
-                {/* CONTENIDO DEL MÓDULO */}
                 <div className="flex-1 bg-transparent">
                   <AnimatePresence mode="wait">
                     {activeModule === 'dashboard' && <DashboardModule key="dashboard" />}
@@ -227,7 +222,6 @@ export default function MundoPage() {
 
       <Bombilla />
 
-      {/* EDITAR Y CREAR MUNDO */}
       <AnimatePresence>
         {(showCreateModal || editingWorld) && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">

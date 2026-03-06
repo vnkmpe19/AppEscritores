@@ -8,7 +8,6 @@ import {
 import Sidebar from '@/components/common/Sidebar';
 import Header from '@/components/common/Header';
 
-// --- IMPORTACIÓN DE TODOS LOS FORMULARIOS ---
 import FormIdentidad from '@/components/personajes/forms/FormIdentidad';
 import FormPsicologia from '@/components/personajes/forms/FormPsicologia';
 import FormRelaciones from '@/components/personajes/forms/FormRelaciones';
@@ -42,7 +41,6 @@ export default function FichaDetalladaPage() {
       <Sidebar viewMode="personajes" isExpanded={false} />
       
       <main className="flex-1 ml-24 p-4 md:p-8 flex flex-col h-screen overflow-hidden">
-        {/* CABECERA DE NAVEGACIÓN */}
         <div className="max-w-[1400px] mx-auto w-full mb-4 flex justify-between items-center">
           <Link href="/personajes" className="inline-flex items-center gap-2 text-slate-400 hover:text-[#FF5C5C] font-bold transition-colors text-xs uppercase tracking-widest no-underline">
             <ChevronLeft size={18} /> Galería de Personajes
@@ -56,7 +54,6 @@ export default function FichaDetalladaPage() {
 
         <div className="max-w-[1400px] mx-auto w-full flex flex-1 gap-6 overflow-hidden mt-4">
           
-          {/* PANEL IZQUIERDO: TODAS LAS DIMENSIONES */}
           <div className="w-72 bg-white rounded-[40px] p-6 shadow-xl border border-slate-100 flex flex-col gap-1.5 overflow-y-auto custom-scrollbar">
             <p className="text-[10px] font-black text-slate-300 uppercase mb-4 px-4 tracking-widest">Dimensiones</p>
             
@@ -79,7 +76,6 @@ export default function FichaDetalladaPage() {
             </div>
           </div>
 
-          {/* CENTRO: ÁREA DE TRABAJO DINÁMICA */}
           <div className="flex-1 bg-white rounded-[40px] shadow-xl border border-slate-100 p-10 overflow-y-auto custom-scrollbar relative">
              <div className="flex justify-between items-center mb-10 border-b border-slate-50 pb-6 text-left">
                 <div>
@@ -92,7 +88,6 @@ export default function FichaDetalladaPage() {
                 </div>
              </div>
 
-             {/* RENDERIZADO DE TODOS LOS FORMULARIOS */}
              <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
                 {activeTab === 'Identidad' && <FormIdentidad personaje={personaje} />}
                 {activeTab === 'Psicología' && <FormPsicologia personaje={personaje} />}
@@ -104,7 +99,6 @@ export default function FichaDetalladaPage() {
              </div>
           </div>
 
-          {/* PANEL DERECHO: IDEAS */}
           <div className="w-80 bg-[#D6EAF8]/40 backdrop-blur-sm rounded-[40px] p-8 flex flex-col shadow-lg border border-white">
             <h3 className="font-black text-xl text-blue-900 mb-6 flex items-center gap-2">
               <Lightbulb size={22} className="text-blue-500" /> Ideas de Arco

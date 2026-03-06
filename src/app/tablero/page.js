@@ -62,7 +62,6 @@ function TableroPageInner() {
   const [ordenTimeline, setOrdenTimeline] = useState("narrativo");
   const [nodoSeleccionado, setNodoSeleccionado] = useState(null);
 
-  // Persistencia
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);

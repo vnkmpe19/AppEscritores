@@ -1,8 +1,7 @@
-// src/components/escenas/SceneSidebar.js
 import React from 'react';
-import { Plus, GripVertical } from 'lucide-react'; // Asumiendo que tienes lucide-react instalado
+import { Plus, GripVertical } from 'lucide-react';
 
-// Datos de ejemplo - esto vendrá de tu estado global o base de datos luego
+// Datos de ejemplo - esto vendrá en la base de datos luego
 const mockScenes = [
   { id: 1, title: 'Escena 1: La taberna' },
   { id: 2, title: 'Escena 2: El mapa' },

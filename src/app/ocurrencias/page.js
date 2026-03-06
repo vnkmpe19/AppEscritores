@@ -20,13 +20,11 @@ export default function OcurrenciasPage() {
   const [editingNote, setEditingNote] = useState(null);
   const [busqueda, setBusqueda] = useState(""); // Estado para el buscador
 
-  // --- LÓGICA DE FILTRADO ---
   const notasFiltradas = notes.filter(note => 
     note.title.toLowerCase().includes(busqueda.toLowerCase()) ||
     note.content.toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  // --- FUNCIONES DE NOTAS ---
   const saveNote = (noteData) => {
     if (editingNote) {
       setNotes(notes.map(n => n.id === editingNote.id ? { ...noteData, id: n.id } : n));
@@ -58,17 +56,14 @@ export default function OcurrenciasPage() {
   return (
     <div className="flex min-h-screen bg-[#FFF5F5] font-sans text-slate-800 overflow-x-hidden">
       
-      {/* 1. SIDEBAR GLOBAL */}
       <Sidebar 
         isExpanded={isSidebarExpanded} 
         setIsExpanded={setIsSidebarExpanded} 
         viewMode="notes" 
       />
 
-      {/* 2. CONTENIDO PRINCIPAL */}
       <main className={`flex-1 transition-all duration-300 ${isSidebarExpanded ? 'ml-64' : 'ml-20'} p-4 md:p-8`}>
         
-        {/* HEADER CON BUSCADOR CONECTADO */}
         <Header 
           user={user} 
           onLogout={() => setUser(null)} 
@@ -78,9 +73,7 @@ export default function OcurrenciasPage() {
 
         <div className="max-w-6xl mx-auto relative min-h-[500px]">
           
-          {/* LÓGICA DE VISUALIZACIÓN (Resultados vs Vacío) */}
           {busqueda !== "" && notasFiltradas.length === 0 ? (
-            /* ESTADO: NO SE ENCONTRARON RESULTADOS */
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -105,13 +98,11 @@ export default function OcurrenciasPage() {
               </div>
             </motion.div>
             ) : notes.length === 0 ? (
-            /* ESTADO: NO HAY NOTAS CREADAS TODAVÍA */
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center h-96 text-slate-400">
               <Edit3 size={64} className="mb-4 opacity-40" />
               <p className="font-bold tracking-tight opacity-60">Haz clic en la bombilla para capturar una idea</p>
             </motion.div>
             ) : (
-            /* ESTADO: MOSTRAR GRID DE NOTAS (FILTRADAS O TODAS) */
             <DragDropContext onDragEnd={onDragEnd}>
               <Droppable droppableId="notes-grid" direction="horizontal">
                 {(provided) => (
@@ -146,7 +137,6 @@ export default function OcurrenciasPage() {
         </div>
       </main>
 
-      {/* 3. BOTÓN BOMBILLA Y EDITOR FLOTANTE */}
       <div className="fixed bottom-10 right-10 z-[60] flex flex-col items-end gap-4">
         <AnimatePresence>
           {showEditor && (

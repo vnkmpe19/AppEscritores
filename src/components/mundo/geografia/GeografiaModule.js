@@ -64,7 +64,6 @@ export default function GeografiaModule() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12 pb-20 relative min-h-screen">
       
-      {/* HEADER */}
       <div className="bg-white p-10 rounded-[40px] border border-slate-100 shadow-xl relative overflow-hidden group">
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#FFD1A4]/20 rounded-full blur-3xl pointer-events-none" />
         <div className="flex items-center gap-5 relative z-10">
@@ -84,7 +83,6 @@ export default function GeografiaModule() {
         <div className="lg:col-span-2"><WidgetBiomas /></div>
         <div className="lg:col-span-1"><WidgetRecursos /></div>
 
-        {/* SECCIÓN DE PUNTOS CON FOTO */}
         <div className="lg:col-span-3 space-y-4">
           <div className="bg-white rounded-[40px] p-6 shadow-sm border border-slate-100 flex justify-between items-center">
             <h3 className="text-xl font-black text-slate-800 flex items-center gap-2">
@@ -138,7 +136,6 @@ export default function GeografiaModule() {
         </div>
       </div>
 
-      {/* PANEL LATERAL */}
       <AnimatePresence>
         {selectedPunto && (
           <>
@@ -180,7 +177,6 @@ export default function GeografiaModule() {
         )}
       </AnimatePresence>
 
-      {/* MODAL CREAR/EDITAR */}
       <AnimatePresence>
         {showModal && (
           <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">

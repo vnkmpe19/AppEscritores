@@ -26,7 +26,6 @@ export default function OcurrenciasDrawer({ isOpen, onClose, onInsert }) {
         {notes.length > 0 ? (
           notes.map((note) => (
             <div key={note.id} className="relative bg-[#FFFDF2] p-4 rounded-3xl border border-amber-100 shadow-sm group">
-              {/* Botón para eliminar nota */}
               <button 
                 onClick={() => deleteNote(note.id)} 
                 className="absolute top-4 right-4 text-slate-300 hover:text-red-500 transition-colors"

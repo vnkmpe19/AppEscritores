@@ -1,4 +1,3 @@
-// src/components/escenas/SceneEditor.js
 import React from 'react';
 import { Save, GitCommitHorizontal, Link2 } from 'lucide-react';
 
@@ -13,7 +12,6 @@ export default function SceneEditor({ scene }) {
 
   return (
     <div className="flex-1 bg-white rounded-r-[50px] shadow-inner p-10 flex flex-col gap-6 overflow-y-auto custom-scrollbar">
-      {/* Título de la escena y botones de acción */}
       <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-6">
         <input 
           type="text"
@@ -27,14 +25,12 @@ export default function SceneEditor({ scene }) {
         </button>
       </div>
 
-      {/* Área de texto grande */}
       <textarea
         className="flex-1 w-full text-slate-700 leading-relaxed outline-none resize-none"
         placeholder="Escribe los detalles seguros de la escena aquí..."
         rows={15}
       />
 
-      {/* Sección de Mapa Conceptual / Vínculos */}
       <div className="bg-[#FDF5F5] p-6 rounded-[24px] border border-[#F1C9C6]">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 rounded-full bg-[#F1C9C6] text-[#FF5C5C]">
@@ -50,7 +46,6 @@ export default function SceneEditor({ scene }) {
                 <Link2 size={16}/>
                 Vincular Escena...
             </button>
-            {/* Aquí irían los tags de escenas ya vinculadas */}
         </div>
       </div>
     </div>

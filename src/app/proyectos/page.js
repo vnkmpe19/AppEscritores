@@ -216,6 +216,12 @@ export default function ProyectosPage() {
                         className={`group flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all ${idx === 0 ? 'bg-[#BFD7ED]/60 hover:bg-[#BFD7ED] text-slate-900' : 'bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-800'}`}
                       >
                         <div className="flex items-center gap-4">
+                          <div className={`w// Header.js Línea 37
+                          <Link href="/login" className="...">Entrar</Link>
+                          
+                          // src/app/page.js Línea 8
+                          <Link href="/login" className="...">Comenzar</Link>
+                          -2.5 h-2.5 rounded-full transition-colors ${idx === 0 ? 'bg-[#FF5C5C]' : 'bg-slate-300 group-hover:bg-[#FF5C5C]'}`} />
                           <div className={`w-2.5 h-2.5 rounded-full transition-colors ${idx === 0 ? 'bg-[#FF5C5C]' : 'bg-slate-300 group-hover:bg-[#FF5C5C]'}`} />
                           <span className="font-bold text-xl">{section.label}</span>
                         </div>

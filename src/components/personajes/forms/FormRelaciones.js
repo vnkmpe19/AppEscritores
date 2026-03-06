@@ -2,7 +2,7 @@
 import React from 'react';
 import { InputField, SectionTextarea, SaveButton } from './FormUtils';
 import { Heart, Eye, Link2, Lock, ShieldAlert } from 'lucide-react';
-// Eliminado: import { Input } from 'postcss'; <--- Esto causaría error
+
 
 export default function FormRelaciones({ personaje }) {
   return (
@@ -45,7 +45,7 @@ export default function FormRelaciones({ personaje }) {
         </div>
       </div>
 
-      {/* BLOQUE 3: LÍNEA DE TIEMPO RELACIONAL */}
+      
       <div className="space-y-6 pt-6 border-t border-slate-100">
         <h4 className="flex items-center gap-2 text-xs font-black uppercase text-slate-500 tracking-[0.2em] mb-4">
           <Link2 size={18} className="text-[#F497A9]"/> Vínculos a través del tiempo
@@ -63,7 +63,6 @@ export default function FormRelaciones({ personaje }) {
         </div>
       </div>
 
-      {/* BLOQUE 4: VÍNCULOS OCULTOS (Secretos y Mentiras) */}
       <div className="bg-[#F497A9]/10 p-8 rounded-[40px] border border-[#F497A9]/20 space-y-6">
         <h4 className="flex items-center gap-2 text-xs font-black uppercase text-[#E68694] tracking-[0.2em]">
           <Lock size={18}/> Hilos Invisibles

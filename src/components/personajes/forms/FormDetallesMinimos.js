@@ -7,7 +7,7 @@ export default function FormDetallesMinimos({ personaje }) {
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700 text-left">
       
-      {/* BLOQUE 1: SENSORIAL (Sonidos y Olores) */}
+      
       <div className="bg-white/40 p-8 rounded-[40px] border border-slate-100 shadow-sm space-y-6">
         <h4 className="flex items-center gap-2 text-xs font-black uppercase text-slate-500 tracking-[0.2em] mb-4">
           <Mic2 size={18} className="text-[#FFB7C5]"/> Percepción Sensorial
@@ -36,7 +36,7 @@ export default function FormDetallesMinimos({ personaje }) {
         </div>
       </div>
 
-      {/* BLOQUE 2: VULNERABILIDAD (Llanto y Sueño) */}
+     
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-slate-100">
         <div className="bg-[#B4DDEB]/10 p-6 rounded-[35px] border border-[#B4DDEB]/30">
           <div className="flex items-center gap-2 mb-4 text-[#4A90E2]">
@@ -60,7 +60,7 @@ export default function FormDetallesMinimos({ personaje }) {
         </div>
       </div>
 
-      {/* BLOQUE 3: TICS Y HÁBITOS (Comportamiento) */}
+      
       <div className="space-y-8 pt-6 border-t border-slate-100">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="group">
@@ -86,7 +86,7 @@ export default function FormDetallesMinimos({ personaje }) {
           </div>
         </div>
 
-        {/* HÁBITO PRIVADO (El secreto de la conducta) */}
+       
         <div className="bg-slate-900 p-8 rounded-[40px] text-white shadow-xl">
           <div className="flex items-center gap-2 mb-4">
             <EyeOff size={20} className="text-[#FFB7C5]"/>

@@ -51,7 +51,7 @@ export default function ManuscriptProcesor({ onSave, onClose, initialData = null
     >
       <div className="bg-white w-full max-w-6xl h-[95vh] rounded-[40px] flex flex-col overflow-hidden shadow-2xl relative">
         
-        {/* Toolbar Estilo Google Docs */}
+        
         <div className="bg-white px-8 py-4 flex items-center justify-between border-b border-slate-100 shadow-sm">
           <div className="flex items-center gap-2 bg-slate-50 p-1.5 rounded-2xl">
             <ToolbarButton 
@@ -107,7 +107,6 @@ export default function ManuscriptProcesor({ onSave, onClose, initialData = null
           </div>
         </div>
 
-        {/* Área de Escritura */}
         <div className="flex-1 overflow-y-auto p-12 bg-[#F8FAFC] flex justify-center custom-scrollbar">
           <div className="bg-white w-[816px] shadow-sm border border-slate-200 p-24 min-h-[1056px] rounded-sm relative mb-20">
              <div className="absolute left-16 top-0 bottom-0 w-px bg-red-50" />

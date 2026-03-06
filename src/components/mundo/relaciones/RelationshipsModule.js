@@ -113,10 +113,9 @@ export default function RelationshipsModule() {
     if (window.confirm("¿Eliminar este tipo de relación?")) setRelTypes(relTypes.filter(t => t.id !== id));
   };
 
-  // --- DRAG & DROP MAPA ---
 
   const handleDragStart = (e, faction) => {
-    if (isZoomed) return; // Evitar conflictos de arrastre cuando hay zoom activo
+    if (isZoomed) return; 
     setDraggingNode(faction);
     const rect = e.currentTarget.getBoundingClientRect();
     setOffset({ x: e.clientX - rect.left - rect.width / 2, y: e.clientY - rect.top - rect.height / 2 });
@@ -137,12 +136,10 @@ export default function RelationshipsModule() {
 
   const handleDragEnd = () => setDraggingNode(null);
 
-  // --- INTERFAZ ---
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12 pb-20">
       
-      {/* Encabezado Principal */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 bg-white p-10 rounded-[40px] shadow-xl border border-slate-100 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-40 h-40 bg-[#BFD7ED]/20 blur-3xl rounded-full" />
         <div className="flex items-center gap-5 relative z-10">
@@ -161,18 +158,15 @@ export default function RelationshipsModule() {
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
         
-        {/* ÁREA DEL MAPA VISUAL */}
         <div className={`xl:col-span-8 ${activeTab === 'map' ? 'block' : 'hidden'}`}>
           <div className="bg-white border-2 border-slate-100 rounded-[40px] shadow-xl p-6 h-[650px] relative overflow-hidden flex flex-col">
             
-            {/* Controles Flotantes del Mapa */}
             <div className="flex justify-between items-center z-20 mb-4 bg-white/80 backdrop-blur-sm p-3 rounded-2xl shadow-sm border border-slate-100">
               <div className="flex gap-2">
                 <button onClick={() => handleOpenModal('add_faction')} className="px-4 py-2 bg-[#D4C1EC] text-white rounded-full font-bold text-xs flex items-center gap-1.5 shadow hover:scale-105 transition-all"><Plus size={14} /> Añadir Facción</button>
                 <button onClick={() => handleOpenModal('add_relation')} className="px-4 py-2 bg-slate-800 text-white rounded-full font-bold text-xs flex items-center gap-1.5 shadow hover:scale-105 transition-all"><Network size={14} /> Nueva Relación</button>
               </div>
               <div className="flex gap-2">
-                {/* Botón de Zoom Único */}
                 <button 
                   onClick={() => setIsZoomed(!isZoomed)} 
                   className={`p-2.5 rounded-full border transition-all ${isZoomed ? 'bg-[#FF5C5C] text-white border-[#FF5C5C] shadow-md' : 'bg-white text-slate-400 border-slate-200 hover:text-slate-600'}`}
@@ -182,7 +176,6 @@ export default function RelationshipsModule() {
               </div>
             </div>
 
-            {/* Contenedor del Mapa interactivo */}
             <div 
               ref={mapRef} 
               onMouseMove={handleDragMove} 
@@ -196,7 +189,6 @@ export default function RelationshipsModule() {
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 style={{ transformOrigin: 'center center' }}
               >
-                {/* Líneas SVG */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none">
                   <AnimatePresence>
                     {relations.map((rel, idx) => {
@@ -228,7 +220,6 @@ export default function RelationshipsModule() {
                   </AnimatePresence>
                 </svg>
 
-                {/* Nodos de Facción (Burbujas) */}
                 {factions.map((f) => (
                   <motion.div 
                     key={f.id} layout 
@@ -239,10 +230,8 @@ export default function RelationshipsModule() {
                     className="absolute -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center gap-3 cursor-pointer"
                   >
                     <div className={`w-20 h-20 rounded-full ${f.id === selectedFaction?.id ? 'border-4 border-[#9BC5E6] scale-105 shadow-[0_0_20px_rgba(74,222,128,0.5)]' : 'border-4 border-white'} shadow-xl flex items-center justify-center text-slate-800 relative bg-cover bg-center overflow-hidden`} style={{ backgroundColor: f.color, backgroundImage: f.image ? `url(${f.image})` : 'none' }}>
-                      {/* Si hay imagen se oculta el ícono, si no, se muestra el ícono genérico */}
                       {!f.image && f.icon}
                       
-                      {/* Etiqueta de Tipo */}
                       <div className="absolute -bottom-1 bg-white px-2 py-0.5 rounded-full shadow-md border border-slate-100 z-20">
                         <span className="text-[7px] font-black uppercase tracking-widest text-slate-500">{f.type}</span>
                       </div>
@@ -255,7 +244,6 @@ export default function RelationshipsModule() {
           </div>
         </div>
 
-        {/* LISTA DE FACCLONES */}
         <div className={`xl:col-span-8 ${activeTab === 'factions' ? 'block' : 'hidden'} space-y-6`}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {factions.map(f => (
@@ -276,7 +264,6 @@ export default function RelationshipsModule() {
           </div>
         </div>
 
-        {/* ÁREA DE TIPOS DE RELACIÓN (Lista) */}
         <div className={`xl:col-span-8 ${activeTab === 'types' ? 'block' : 'hidden'} space-y-6`}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {relTypes.map(t => (
@@ -289,10 +276,8 @@ export default function RelationshipsModule() {
           </div>
         </div>
 
-        {/* --- SIDEBAR LATERAL DERECHO (Detalles + Leyenda) --- */}
         <div className="xl:col-span-4 space-y-6">
           
-          {/* Detalles de Facción Seleccionada */}
           <AnimatePresence mode="wait">
             {selectedFaction ? (
               <motion.div key={selectedFaction.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="bg-white p-8 rounded-[40px] shadow-xl border border-slate-100 relative">
@@ -341,7 +326,6 @@ export default function RelationshipsModule() {
             )}
           </AnimatePresence>
 
-          {/* LEYENDA (Muda a la barra lateral) */}
           <div className="bg-white p-8 rounded-[40px] shadow-xl border border-slate-100">
             <div className="flex justify-between items-center mb-6">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
@@ -359,7 +343,7 @@ export default function RelationshipsModule() {
         </div>
       </div>
 
-      {/* --- MODAL UNIFICADO (Crear/Editar) --- */}
+      
       <AnimatePresence>
         {showModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -377,7 +361,7 @@ export default function RelationshipsModule() {
                   <button onClick={() => setShowModal(false)} className="text-slate-400 hover:bg-slate-50 p-2 rounded-full"><X size={20} /></button>
                 </div>
 
-                {/* FORMULARIO: FACCIONES (Con subida de imagen) */}
+            
                 {(modalType === 'add_faction' || modalType === 'edit_faction') && (
                   <div className="space-y-5">
                     <FormInput label="Nombre de la Facción" value={formFaccion.name} onChange={(v) => setFormFaccion({ ...formFaccion, name: v })} placeholder="Ej. La Legión..." />
@@ -388,7 +372,7 @@ export default function RelationshipsModule() {
                     <FormInput label="Líder Principal" value={formFaccion.leader} onChange={(v) => setFormFaccion({ ...formFaccion, leader: v })} placeholder="Ej. Gran Maestro..." />
                     <FormTextArea label="Objetivo / Motivación" value={formFaccion.objective} onChange={(v) => setFormFaccion({ ...formFaccion, objective: v })} placeholder="Describe su propósito principal..." />
                     
-                    {/* Campo de Imagen (URL o Archivo) */}
+                  
                     <div>
                       <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Imagen / Emblema</label>
                       <div className="flex gap-2">
@@ -407,7 +391,7 @@ export default function RelationshipsModule() {
                   </div>
                 )}
 
-                {/* FORMULARIO: RELACIONES */}
+                
                 {modalType === 'add_relation' && (
                   <div className="space-y-5">
                     <FormSelect label="Facción de Origen" value={formRelacion.fromId} onChange={(v) => setFormRelacion({ ...formRelacion, fromId: v })} options={factions.map(f => ({ value: f.id, label: f.name }))} />
@@ -416,7 +400,7 @@ export default function RelationshipsModule() {
                   </div>
                 )}
 
-                {/* FORMULARIO: TIPOS DE RELACIÓN */}
+               
                 {modalType === 'add_type' && (
                   <div className="space-y-5">
                     <FormInput label="Nombre del Tipo" value={formTipo.label} onChange={(v) => setFormTipo({ ...formTipo, label: v })} placeholder="Ej. Pacto de No Agresión..." />
@@ -446,7 +430,7 @@ export default function RelationshipsModule() {
   );
 }
 
-// --- SUB-COMPONENTES UI ---
+
 
 function TabBtn({ label, active, onClick }) {
   return (
@@ -482,7 +466,7 @@ function DetailItem({ label, value, icon, italic }) {
   );
 }
 
-// FORM HELPERS
+
 
 function FormInput({ label, value, onChange, placeholder }) {
   return (

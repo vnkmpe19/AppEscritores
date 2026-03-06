@@ -30,7 +30,7 @@ export default function Bombilla() {
   );
 }
 
-// Sub-componente privado (solo se usa aquí adentro)
+
 function KeepEditor({ onSave, onClose }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');

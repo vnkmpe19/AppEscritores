@@ -21,7 +21,6 @@ export default function Sidebar({ isExpanded, setIsExpanded, viewMode }) {
         <SidebarItem icon={<Edit3 />} label="Escenas" expanded={isExpanded} href="/escenas" active={viewMode === 'escenas'} />
         <SidebarItem icon={<Globe />} label="Mundo" expanded={isExpanded} href="/mundo" active={viewMode === 'mundo'} />
         
-        {/* NUEVO: BOTÓN DE TABLERO AÑADIDO AQUÍ */}
         <SidebarItem 
           icon={<LayoutGrid />} 
           label="Tablero" 
@@ -31,7 +30,6 @@ export default function Sidebar({ isExpanded, setIsExpanded, viewMode }) {
         />
       </div>
 
-      {/* Botón de Usuario al final */}
       <div className="mt-auto flex justify-center w-full">
         <Link href="/ocurrencias" className="w-12 h-12 bg-[#719fd7] rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:bg-black transition-colors border-2 border-white/20">
           <Lightbulb className="text-white" size={24} />
@@ -41,25 +39,21 @@ export default function Sidebar({ isExpanded, setIsExpanded, viewMode }) {
   );
 }
 
-// Función interna para los items del menú
 function SidebarItem({ icon, label, expanded, active, href = "#" }) {
   return (
     <Link href={href} className={`flex items-center w-full px-6 py-2 cursor-pointer group transition-all duration-300 relative ${
       active ? 'text-[#FF5C5C]' : 'text-slate-400 hover:text-[#FF5C5C]'
     }`}>
-      {/* Cuadrado de color cuando está activo */}
       <div className={`p-2 rounded-xl transition-all ${active ? 'bg-[#FF5C5C] text-white shadow-lg shadow-[#FF5C5C]/30' : 'group-hover:bg-white/50'}`}>
         {React.cloneElement(icon, { size: 24 })}
       </div>
 
-      {/* Texto que aparece al desplegar */}
       <span className={`ml-4 font-bold text-lg transition-all duration-300 whitespace-nowrap ${
         expanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 pointer-events-none'
       }`}>
         {label}
       </span>
 
-      {/* Indicador lateral cuando está plegado */}
       {active && !expanded && (
         <div className="absolute left-0 w-1.5 h-8 bg-[#FF5C5C] rounded-r-full" />
       )}

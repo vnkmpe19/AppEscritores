@@ -8,7 +8,6 @@ const SceneCard = ({ data, selected }) => {
     <div className={`min-w-[180px] max-w-[220px] bg-white rounded-[32px] shadow-xl border-2 transition-all 
       ${selected ? 'border-[#FF5C5C] scale-105 shadow-[#FF5C5C]/20' : 'border-transparent hover:border-slate-100'}`}>
       
-      {/* Puntos de conexión (Handles) */}
       <Handle type="target" position={Position.Top} className="!bg-slate-300 w-2.5 h-2.5" />
       <Handle type="source" position={Position.Bottom} className="!bg-[#FF5C5C] w-2.5 h-2.5" />
       
@@ -19,7 +18,6 @@ const SceneCard = ({ data, selected }) => {
             <span className="text-[9px] font-black uppercase tracking-widest">Escena</span>
           </div>
 
-          {/* Menú de opciones (Solo con Editar ahora) */}
           <div className="relative group/menu nodrag nopan"> 
             <button className="p-1.5 hover:bg-slate-50 rounded-full text-slate-300 transition-colors">
               <MoreVertical size={14} />
