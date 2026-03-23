@@ -1,104 +1,98 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/app/lib/supabase'; // Ajusta tu ruta
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Globe, Search, Plus, Edit, Trash2, Languages, Ghost, Utensils, 
-  Activity, Bell, Sun, TrendingUp, X, MapPin, Image as ImageIcon, Sparkles, BookOpen, Users
+  Globe, Plus, Edit, Trash2, Ghost, Utensils, 
+  Activity, X, Sparkles
 } from 'lucide-react';
 
-const INITIAL_ETHNICITIES = [
-  { id: 1, name: 'Los Kaltari', desc: 'Nómadas conocidos por su maestría en la orfebrería y sus túnicas de seda teñida.', region: 'DESIERTO DE AMBAR', image: 'https://picsum.photos/seed/kaltari/400/300' },
-  { id: 2, name: 'Guardianes de Skald', desc: 'Guerreros robustos de las montañas, sus vestiduras incorporan pieles de osos blancos.', region: 'CUMBRES NEVADAS', image: 'https://picsum.photos/seed/skald/400/300' },
-  { id: 3, name: 'Mercaderes de Oriz', desc: 'Cultura urbana centrada en el comercio fluvial y la astronomía náutica.', region: 'CIUDAD DE LOS RÍOS', image: 'https://picsum.photos/seed/oriz/400/300' }
-];
-
-const INITIAL_RITES = [
-  { id: 1, name: 'El Descenso Fluvial', desc: 'Los habitantes de Oriz colocan a sus difuntos en balsas de caña llenas de flores de loto blancas.' },
-  { id: 2, name: 'Túmulos de Escarcha', desc: 'Los Skald entierran a sus héroes bajo capas de permafrost, marcando el lugar con una lanza.' }
-];
-
-const INITIAL_TRADITIONS = [
-  { id: 1, name: 'Pan de Polvo Dorado', desc: 'Elaborado con polen de lirio de arena, este pan dulce es el pilar de los banquetes Kaltari.', image: 'https://picsum.photos/seed/bread/100/100' },
-  { id: 2, name: 'Té de Resina Ahumada', desc: 'Bebida amarga consumida por los monjes de las Cumbres para resistir las bajas temperaturas.', image: 'https://picsum.photos/seed/tea/100/100' }
-];
-
-const INITIAL_BELIEFS = [
-  { id: 1, name: 'El Gran Tejedor', type: 'DEIDAD DE LA CREACIÓN', desc: 'Se cree que el universo es un tapiz infinito. Cada vida es un hilo y el destino es el patrón.' },
-  { id: 2, name: 'Los Hijos del Eco', type: 'ESPÍRITUS DE LA NATURALEZA', desc: 'No adoran a dioses, sino a los ecos de sus ancestros que residen en el viento y el agua.' }
-];
-
-export default function CulturesModule() {
-  const [ethnicities, setEthnicities] = useState(INITIAL_ETHNICITIES);
-  const [rites, setRites] = useState(INITIAL_RITES);
-  const [traditions, setTraditions] = useState(INITIAL_TRADITIONS);
-  const [beliefs, setBeliefs] = useState(INITIAL_BELIEFS);
+export default function CulturesModule({ proyectoId }) {
+  // Estados vacíos listos para llenarse con BD
+  const [ethnicities, setEthnicities] = useState([]);
+  const [rites, setRites] = useState([]);
+  const [traditions, setTraditions] = useState([]);
+  const [beliefs, setBeliefs] = useState([]);
   
   const [showModal, setShowModal] = useState(false);
   const [modalConfig, setModalConfig] = useState({ type: '', title: '' });
   const [editingEntity, setEditingEntity] = useState(null);
+  const [guardando, setGuardando] = useState(false);
 
+  // Estados del formulario
   const [formName, setFormName] = useState('');
   const [formDesc, setFormDesc] = useState('');
   const [formRegion, setFormRegion] = useState(''); 
   const [formImage, setFormImage] = useState(''); 
   const [formType, setFormType] = useState(''); 
 
-  
+  // Cargar todo al iniciar
+  useEffect(() => {
+    if (proyectoId) cargarTodo();
+  }, [proyectoId]);
+
+  const cargarTodo = async () => {
+    const [resCulturas, resRitos, resTradiciones, resCreencias] = await Promise.all([
+      supabase.from('culturas').select('*').eq('id_proyecto', proyectoId),
+      supabase.from('ritos').select('*').eq('id_proyecto', proyectoId),
+      supabase.from('tradiciones').select('*').eq('id_proyecto', proyectoId),
+      supabase.from('creencias').select('*').eq('id_proyecto', proyectoId)
+    ]);
+
+    if (resCulturas.data) setEthnicities(resCulturas.data);
+    if (resRitos.data) setRites(resRitos.data);
+    if (resTradiciones.data) setTraditions(resTradiciones.data);
+    if (resCreencias.data) setBeliefs(resCreencias.data);
+  };
+
   const openModal = (type, title, entity = null) => {
     setModalConfig({ type, title });
     setEditingEntity(entity);
     
     if (entity) {
-      setFormName(entity.name || '');
-      setFormDesc(entity.desc || '');
+      setFormName(entity.nombre || '');
+      setFormDesc(entity.descripcion || '');
       setFormRegion(entity.region || '');
-      setFormImage(entity.image || '');
-      setFormType(entity.type || '');
+      setFormImage(entity.foto || '');
+      setFormType(entity.tipo || '');
     } else {
       setFormName(''); setFormDesc(''); setFormRegion(''); setFormImage(''); setFormType('');
     }
     setShowModal(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formName) return alert("El nombre es obligatorio");
+    setGuardando(true);
 
-    const newEntity = {
-      id: editingEntity ? editingEntity.id : crypto.randomUUID(),
-      name: formName,
-      desc: formDesc,
-      region: formRegion || 'REGIÓN DESCONOCIDA',
-      image: formImage || `https://picsum.photos/seed/${Math.random()}/400/300`,
-      type: formType || 'TIPO DESCONOCIDO'
+    // Mapeamos el tipo de modal a la tabla correcta de BD
+    const configs = {
+      ethnicity: { tabla: 'culturas', datos: { nombre: formName, descripcion: formDesc, region: formRegion, foto: formImage } },
+      rite: { tabla: 'ritos', datos: { nombre: formName, descripcion: formDesc } },
+      tradition: { tabla: 'tradiciones', datos: { nombre: formName, descripcion: formDesc, foto: formImage } },
+      belief: { tabla: 'creencias', datos: { nombre: formName, descripcion: formDesc, tipo: formType } }
     };
 
-    if (modalConfig.type === 'ethnicity') {
-      if (editingEntity) setEthnicities(ethnicities.map(e => e.id === editingEntity.id ? newEntity : e));
-      else setEthnicities([...ethnicities, newEntity]);
-    } 
-    else if (modalConfig.type === 'rite') {
-      if (editingEntity) setRites(rites.map(e => e.id === editingEntity.id ? newEntity : e));
-      else setRites([...rites, newEntity]);
-    }
-    else if (modalConfig.type === 'tradition') {
-      if (editingEntity) setTraditions(traditions.map(e => e.id === editingEntity.id ? newEntity : e));
-      else setTraditions([...traditions, newEntity]);
-    }
-    else if (modalConfig.type === 'belief') {
-      if (editingEntity) setBeliefs(beliefs.map(e => e.id === editingEntity.id ? newEntity : e));
-      else setBeliefs([...beliefs, newEntity]);
+    const { tabla, datos } = configs[modalConfig.type];
+    datos.id_proyecto = proyectoId;
+
+    if (editingEntity) {
+      await supabase.from(tabla).update(datos).eq('id', editingEntity.id);
+    } else {
+      await supabase.from(tabla).insert([datos]);
     }
 
     setShowModal(false);
+    setGuardando(false);
+    cargarTodo(); // Refresca las listas
   };
 
-  const handleDelete = (type, id) => {
+  const handleDelete = async (type, id) => {
     if (window.confirm("¿Estás seguro de eliminar este elemento?")) {
-      if (type === 'ethnicity') setEthnicities(ethnicities.filter(e => e.id !== id));
-      if (type === 'rite') setRites(rites.filter(e => e.id !== id));
-      if (type === 'tradition') setTraditions(traditions.filter(e => e.id !== id));
-      if (type === 'belief') setBeliefs(beliefs.filter(e => e.id !== id));
+      const tablas = { ethnicity: 'culturas', rite: 'ritos', tradition: 'tradiciones', belief: 'creencias' };
+      await supabase.from(tablas[type]).delete().eq('id', id);
+      cargarTodo();
     }
   };
 
@@ -107,65 +101,57 @@ export default function CulturesModule() {
       
       <div className="bg-white p-10 rounded-[40px] border border-slate-100 shadow-xl relative overflow-hidden">
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#D4C1EC]/20 rounded-full blur-3xl pointer-events-none" />
-        
         <div className="flex items-center gap-5 relative z-10">
           <div className="p-4 bg-[#D4C1EC]/50 text-slate-800 rounded-2xl shadow-inner">
             <Globe size={32} />
           </div>
           <div>
-            <h2 className="text-5xl font-black text-slate-900 tracking-tight">Culturas y Lenguajes</h2>
+            <h2 className="text-5xl font-black text-slate-900 tracking-tight">Cultura</h2>
             <p className="text-slate-400 text-lg mt-1 max-w-2xl">
-              Explora las etnias, tradiciones, ritos sagrados y las lenguas que dan vida a los habitantes de tu mundo.
+              Explora las etnias, tradiciones, ritos sagrados que dan vida a los habitantes de tu mundo.
             </p>
           </div>
         </div>
       </div>
 
+      {/* ETNIAS */}
       <section>
         <div className="flex justify-between items-center mb-8 pr-4">
-          <h3 className="text-3xl font-black text-slate-800 flex items-center gap-3">
-            Etnias Principales
-          </h3>
-          <button className="text-[#FF5C5C] font-black text-xs uppercase tracking-widest hover:underline">Ver todas</button>
+          <h3 className="text-3xl font-black text-slate-800 flex items-center gap-3">Etnias Principales</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           <AnimatePresence>
             {ethnicities.map(eth => (
-              <motion.div 
-                key={eth.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-                className="bg-white rounded-[32px] overflow-hidden shadow-sm border border-slate-100 group hover:shadow-xl transition-all flex flex-col"
-              >
-                <div className="h-48 relative overflow-hidden">
-                  <img src={eth.image} alt={eth.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                  <div className="absolute top-4 left-4 bg-[#FFB703] text-slate-900 text-[10px] font-black px-3 py-1 rounded-lg uppercase tracking-widest shadow-md">
-                    {eth.region}
-                  </div>
+              <motion.div key={eth.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="bg-white rounded-[32px] overflow-hidden shadow-sm border border-slate-100 group hover:shadow-xl transition-all flex flex-col">
+                <div className="h-48 relative overflow-hidden bg-slate-100">
+                  {eth.foto && <img src={eth.foto} alt={eth.nombre} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />}
+                  {eth.region && <div className="absolute top-4 left-4 bg-[#FFB703] text-slate-900 text-[10px] font-black px-3 py-1 rounded-lg uppercase tracking-widest shadow-md">{eth.region}</div>}
+                  
                   <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all flex gap-2 z-10">
                     <button onClick={() => openModal('ethnicity', 'Editar Etnia', eth)} className="p-2 bg-white/90 backdrop-blur-sm rounded-full text-blue-500 hover:scale-110 shadow-lg"><Edit size={16}/></button>
                     <button onClick={() => handleDelete('ethnicity', eth.id)} className="p-2 bg-white/90 backdrop-blur-sm rounded-full text-red-500 hover:scale-110 shadow-lg"><Trash2 size={16}/></button>
                   </div>
                 </div>
                 <div className="p-6 flex-1 flex flex-col">
-                  <h4 className="text-2xl font-black text-slate-800 mb-3">{eth.name}</h4>
-                  <p className="text-sm text-slate-500 leading-relaxed">{eth.desc}</p>
+                  <h4 className="text-2xl font-black text-slate-800 mb-3">{eth.nombre}</h4>
+                  <p className="text-sm text-slate-500 leading-relaxed">{eth.descripcion}</p>
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
 
-          <button 
-            onClick={() => openModal('ethnicity', 'Nueva Etnia')}
-            className="border-2 border-dashed border-slate-200 rounded-[32px] flex flex-col items-center justify-center gap-4 text-slate-400 hover:border-[#FFB703] hover:text-[#FFB703] transition-all min-h-[400px] bg-slate-50/50 group"
-          >
+          <button onClick={() => openModal('ethnicity', 'Nueva Etnia')} className="border-2 border-dashed border-slate-200 rounded-[32px] flex flex-col items-center justify-center gap-4 text-slate-400 hover:border-[#FFB703] hover:text-[#FFB703] transition-all min-h-[400px] bg-slate-50/50 group">
             <div className="p-4 bg-white rounded-full shadow-sm group-hover:scale-110 transition-transform"><Plus size={32} /></div>
             <span className="font-black uppercase tracking-widest text-sm">Agregar Nueva Etnia</span>
           </button>
         </div>
       </section>
 
+      {/* LOS TIROS Y TRADICIONES*/}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         
+        {/* RITOS */}
         <section className="space-y-6">
           <div className="flex items-center gap-3 mb-8">
             <Ghost className="text-[#FF5C5C]" size={32} />
@@ -179,8 +165,8 @@ export default function CulturesModule() {
                     <button onClick={() => openModal('rite', 'Editar Rito', rite)} className="p-1.5 text-slate-300 hover:text-blue-500"><Edit size={16}/></button>
                     <button onClick={() => handleDelete('rite', rite.id)} className="p-1.5 text-slate-300 hover:text-red-500"><Trash2 size={16}/></button>
                   </div>
-                  <h4 className="font-black text-slate-800 text-lg mb-2">{rite.name}</h4>
-                  <p className="text-sm text-slate-500 leading-relaxed pr-8">{rite.desc}</p>
+                  <h4 className="font-black text-slate-800 text-lg mb-2">{rite.nombre}</h4>
+                  <p className="text-sm text-slate-500 leading-relaxed pr-8">{rite.descripcion}</p>
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -190,6 +176,7 @@ export default function CulturesModule() {
           </div>
         </section>
 
+        {/* TRADICIONES */}
         <section className="space-y-6">
           <div className="flex items-center gap-3 mb-8">
             <Utensils className="text-[#FFB703]" size={32} />
@@ -204,11 +191,11 @@ export default function CulturesModule() {
                     <button onClick={() => handleDelete('tradition', trad.id)} className="p-1.5 text-slate-300 hover:text-red-500 bg-white rounded-full shadow-sm"><Trash2 size={14}/></button>
                   </div>
                   <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 bg-slate-100">
-                    <img src={trad.image} alt={trad.name} className="w-full h-full object-cover" />
+                    {trad.foto && <img src={trad.foto} alt={trad.nombre} className="w-full h-full object-cover" />}
                   </div>
                   <div className="flex-1 pr-8">
-                    <h4 className="font-black text-slate-800 text-lg mb-1">{trad.name}</h4>
-                    <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">{trad.desc}</p>
+                    <h4 className="font-black text-slate-800 text-lg mb-1">{trad.nombre}</h4>
+                    <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">{trad.descripcion}</p>
                   </div>
                 </motion.div>
               ))}
@@ -221,6 +208,7 @@ export default function CulturesModule() {
 
       </div>
 
+      {/* CREENCIAS */}
       <section className="pt-6">
         <div className="flex items-center gap-3 mb-8">
           <Activity className="text-[#FF5C5C]" size={32} />
@@ -234,9 +222,9 @@ export default function CulturesModule() {
                   <button onClick={() => openModal('belief', 'Editar Creencia', belief)} className="p-1.5 text-slate-300 hover:text-blue-500"><Edit size={16}/></button>
                   <button onClick={() => handleDelete('belief', belief.id)} className="p-1.5 text-slate-300 hover:text-red-500"><Trash2 size={16}/></button>
                 </div>
-                <h4 className="text-2xl font-black text-slate-800 mb-1">{belief.name}</h4>
-                <p className="text-[10px] font-black text-[#FFB703] uppercase tracking-widest mb-4">{belief.type}</p>
-                <p className="text-sm text-slate-500 leading-relaxed">{belief.desc}</p>
+                <h4 className="text-2xl font-black text-slate-800 mb-1">{belief.nombre}</h4>
+                {belief.tipo && <p className="text-[10px] font-black text-[#FFB703] uppercase tracking-widest mb-4">{belief.tipo}</p>}
+                <p className="text-sm text-slate-500 leading-relaxed">{belief.descripcion}</p>
               </motion.div>
             ))}
           </AnimatePresence>
@@ -246,8 +234,6 @@ export default function CulturesModule() {
           </button>
         </div>
       </section>
-
-
 
       <AnimatePresence>
         {showModal && (
@@ -297,8 +283,8 @@ export default function CulturesModule() {
                   )}
                 </div>
 
-                <button onClick={handleSave} className="w-full bg-[#FFB703] text-slate-900 font-black py-4 rounded-2xl mt-4 shadow-lg hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-                  <Sparkles size={20} /> Guardar
+                <button onClick={handleSave} disabled={guardando} className="w-full bg-[#FFD1A4] text-slate-900 font-black py-4 rounded-2xl mt-4 shadow-lg hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+                  {guardando ? 'Guardando...' : 'Guardar'}
                 </button>
               </div>
             </motion.div>
