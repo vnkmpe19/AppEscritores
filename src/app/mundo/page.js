@@ -2,19 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link'; 
+import { supabase } from '../lib/supabase'; // Asegúrate de la ruta correcta
 import { 
   ChevronLeft, Trash2, Edit, Plus, LayoutGrid, 
   Map, Users, BookOpen as BookIcon, Languages, Network, X, Globe
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// --- Componentes Reutilizables ---
 import Sidebar from '@/components/common/Sidebar';
 import Header from '@/components/common/Header';
 import Bombilla from '@/components/common/Bombilla';
 import Libreta from '@/components/proyectos/Libreta';
 
-// --- Módulos del Mundo ---
+// Tus módulos
 import DashboardModule from '@/components/mundo/dashboard/DashboardModule';
 import GeografiaModule from '@/components/mundo/geografia/GeografiaModule';
 import SociopoliticalModule from '@/components/mundo/sociopolitica/SociopoliticalModule';
@@ -24,23 +24,18 @@ import RelationshipsModule from '@/components/mundo/relaciones/RelationshipsModu
 
 const COLORS = ['bg-[#BFD7ED]', 'bg-[#FFB7C5]', 'bg-[#E8F5A2]', 'bg-[#FFD1A4]', 'bg-[#D4C1EC]'];
 
-const INITIAL_WORLDS = [
-  { id: 1, title: 'Aethelgard', description: 'Un continente dividido por la magia.', coverColor: 'bg-[#E8F5A2]', image: null, author: 'Patito Sexy' },
-  { id: 2, title: 'Reino de las Sombras', description: 'Mundo subterráneo.', coverColor: 'bg-[#BFD7ED]', image: null, author: 'Patito Sexy' }
-];
-
 const WORLD_MODULES = [
   { id: 'dashboard', label: 'Panel de Control', icon: <LayoutGrid size={18} />, href: null },
   { id: 'geografia', label: 'Geografía y Clima', icon: <Map size={18} />, href: null }, 
   { id: 'sociedad', label: 'Estructura Sociopolítica', icon: <Users size={18} />, href: null },
   { id: 'historia', label: 'Historia y Eras', icon: <BookIcon size={18} />, href: null },
-  { id: 'culturas', label: 'Culturas y Lenguajes', icon: <Languages size={18} />, href: null },
+  { id: 'culturas', label: 'Cultura', icon: <Languages size={18} />, href: null },
   { id: 'relaciones', label: 'Red de Relaciones', icon: <Network size={18} />, href: null },
 ];
 
 export default function MundoPage() {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
-  const [worlds, setWorlds] = useState(INITIAL_WORLDS);
+  const [worlds, setWorlds] = useState([]); 
   const [viewMode, setViewMode] = useState('grid'); 
   const [selectedWorld, setSelectedWorld] = useState(null);
   const [activeModule, setActiveModule] = useState('dashboard');
@@ -53,21 +48,63 @@ export default function MundoPage() {
   const [formImage, setFormImage] = useState(''); 
   const [terminoBusqueda, setTerminoBusqueda] = useState('');
 
+  // Usuario real
+  const [currentUser, setCurrentUser] = useState({ id: null, name: 'Cargando...' });
+
   useEffect(() => {
-    const mundoGuardadoId = localStorage.getItem('mundoActivoId');
-    if (mundoGuardadoId) {
-      const mundoEncontrado = worlds.find(w => w.id.toString() === mundoGuardadoId);
-      if (mundoEncontrado) {
-        setSelectedWorld(mundoEncontrado);
-        setViewMode('detail');
-        setActiveModule('dashboard');
+    cargarDatos();
+  }, []);
+
+  const cargarDatos = async () => {
+    // 1. Obtener usuario actual
+    const { data: authData } = await supabase.auth.getUser();
+    if (!authData.user) return;
+
+    const { data: perfil } = await supabase
+      .from('usuarios')
+      .select('nombre_usuario')
+      .eq('id', authData.user.id)
+      .single();
+
+    const userName = perfil?.nombre_usuario || 'Escritor';
+    setCurrentUser({ id: authData.user.id, name: userName });
+
+    const { data: mundosBd } = await supabase
+      .from('proyectos')
+      .select('*')
+      .order('fecha_creacion', { ascending: false });
+
+    if (mundosBd) {
+      const mapeados = mundosBd.map(w => ({
+        id: w.id,
+        title: w.titulo,
+        description: w.descripcion,
+        coverColor: w.color || COLORS[0],
+        image: w.portada,
+        author: userName
+      }));
+      setWorlds(mapeados);
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlId = urlParams.get('proyecto_id');
+      const localId = localStorage.getItem('mundoActivoId');
+      
+      const mundoIdBuscar = urlId || localId;
+
+      if (mundoIdBuscar) {
+        const mundoEncontrado = mapeados.find(w => w.id === mundoIdBuscar);
+        if (mundoEncontrado) {
+          setSelectedWorld(mundoEncontrado);
+          setViewMode('detail');
+          setActiveModule('dashboard');
+        }
       }
     }
-  }, [worlds]);
+  };
 
   const mundosFiltrados = worlds.filter(mundo => 
     mundo.title.toLowerCase().includes(terminoBusqueda.toLowerCase()) ||
-    mundo.description.toLowerCase().includes(terminoBusqueda.toLowerCase())
+    (mundo.description && mundo.description.toLowerCase().includes(terminoBusqueda.toLowerCase()))
   );
 
   const handleSearch = (termino) => setTerminoBusqueda(termino);
@@ -76,28 +113,67 @@ export default function MundoPage() {
     setSelectedWorld(world); 
     setViewMode('detail'); 
     setActiveModule('dashboard'); 
-    localStorage.setItem('mundoActivoId', world.id.toString());
+    localStorage.setItem('mundoActivoId', world.id);
   };
   
   const handleCloseDetail = () => { 
     setSelectedWorld(null); 
     setViewMode('grid'); 
     localStorage.removeItem('mundoActivoId');
+
+    window.history.replaceState(null, '', '/mundo');
   };
 
-  const handleCreate = () => {
-    const newWorld = { id: crypto.randomUUID(), title: formTitle || 'Nuevo Mundo', description: formDesc, coverColor: formColor, image: formImage || null, author: 'Patito Sexy' };
-    setWorlds([...worlds, newWorld]);
-    setShowCreateModal(false); resetForm();
+  const handleCreate = async () => {
+    const { data, error } = await supabase
+      .from('proyectos')
+      .insert([{
+        id_usuario: currentUser.id,
+        titulo: formTitle || 'Nuevo Mundo',
+        descripcion: formDesc,
+        color: formColor,
+        portada: formImage || null
+      }])
+      .select()
+      .single();
+
+    if (!error && data) {
+      const newWorld = { 
+        id: data.id, 
+        title: data.titulo, 
+        description: data.descripcion, 
+        coverColor: data.color, 
+        image: data.portada, 
+        author: currentUser.name 
+      };
+      setWorlds([newWorld, ...worlds]);
+      setShowCreateModal(false); 
+      resetForm();
+    }
   };
 
-  const handleUpdate = () => {
-    setWorlds(worlds.map(w => w.id === editingWorld.id ? { ...w, title: formTitle, description: formDesc, coverColor: formColor, image: formImage || null } : w));
-    setEditingWorld(null); resetForm();
+  const handleUpdate = async () => {
+    const { error } = await supabase
+      .from('proyectos')
+      .update({
+        titulo: formTitle,
+        descripcion: formDesc,
+        color: formColor,
+        portada: formImage || null
+      })
+      .eq('id', editingWorld.id);
+
+    if (!error) {
+      setWorlds(worlds.map(w => w.id === editingWorld.id ? { ...w, title: formTitle, description: formDesc, coverColor: formColor, image: formImage || null } : w));
+      setEditingWorld(null); 
+      setShowCreateModal(false);
+      resetForm();
+    }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('¿Estás seguro de eliminar este mundo? Se borrará todo su Lore.')) {
+      await supabase.from('proyectos').delete().eq('id', id);
       setWorlds(worlds.filter(w => w.id !== id));
       if (selectedWorld?.id === id) handleCloseDetail();
     }
@@ -108,7 +184,7 @@ export default function MundoPage() {
   const openEditModal = (world) => { 
     setEditingWorld(world); 
     setFormTitle(world.title); 
-    setFormDesc(world.description); 
+    setFormDesc(world.description || ''); 
     setFormColor(world.coverColor); 
     setFormImage(world.image || ''); 
     setShowCreateModal(true); 
@@ -126,10 +202,10 @@ export default function MundoPage() {
       <main className={`flex-1 transition-all duration-300 ${isSidebarExpanded ? 'ml-64' : 'ml-24'} p-4 md:p-8`}>
         
         <Header 
-          user={{name: "Patito Sexy"}} 
+          user={{name: currentUser.name}} 
           onSearch={handleSearch} 
           showSearch={!selectedWorld} 
-          title="Worldbuilding" 
+          title="Mundo" 
         />
 
         <div className="max-w-[1400px] mx-auto relative min-h-[500px]">
@@ -205,12 +281,13 @@ export default function MundoPage() {
 
                 <div className="flex-1 bg-transparent">
                   <AnimatePresence mode="wait">
-                    {activeModule === 'dashboard' && <DashboardModule key="dashboard" />}
-                    {activeModule === 'geografia' && <GeografiaModule key="geografia" />}
-                    {activeModule === 'sociedad' && <SociopoliticalModule key="sociedad" />}
-                    {activeModule === 'historia' && <HistoryModule key="historia" />}
-                    {activeModule === 'culturas' && <CulturesModule key="culturas" />}
-                    {activeModule === 'relaciones' && <RelationshipsModule key="relaciones" />}
+
+                    {activeModule === 'dashboard' && <DashboardModule key="dashboard" proyectoId={selectedWorld.id} />}
+                    {activeModule === 'geografia' && <GeografiaModule key="geografia" proyectoId={selectedWorld.id} />}
+                    {activeModule === 'sociedad' && <SociopoliticalModule key="sociedad" proyectoId={selectedWorld.id} />}
+                    {activeModule === 'historia' && <HistoryModule key="historia" proyectoId={selectedWorld.id} />}
+                    {activeModule === 'culturas' && <CulturesModule key="culturas" proyectoId={selectedWorld.id} />}
+                    {activeModule === 'relaciones' && <RelationshipsModule key="relaciones" proyectoId={selectedWorld.id} />}
                   </AnimatePresence>
                 </div>
 

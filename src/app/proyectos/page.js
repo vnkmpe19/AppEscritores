@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { supabase } from '../lib/supabase'; // Asegúrate de tu ruta
 import { 
   ChevronRight, Trash2, Edit, Plus, X, LayoutGrid, BookOpen, Image as ImageIcon, ChevronLeft, Search
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Importaciones
 import Sidebar from '@/components/common/Sidebar';
 import Header from '@/components/common/Header'; 
 import Libreta from '@/components/proyectos/Libreta'; 
@@ -20,19 +20,13 @@ const COLORS = [
 const PROJECT_SECTIONS = [
   { id: 'personajes', label: 'Personajes', href: '/personajes' },
   { id: 'escenas', label: 'Escenas', href: '/escenas' },
-  { id: 'worldbuilding', label: 'Worldbuilding', href: '/mundo' },
+  { id: 'Mundo', label: 'Mundo', href: '/mundo' },
   { id: 'ocurrencias', label: 'Ocurrencias', href: '/ocurrencias' }
-];
-
-const INITIAL_PROJECTS = [
-  { id: 1, title: 'Proyecto 1', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', coverColor: 'bg-[#BFD7ED]', image: null, author: 'Patito Sexy' },
-  { id: 2, title: 'Mi Novela Rosa', description: 'Una historia de amor en los tiempos del código.', coverColor: 'bg-[#FFB7C5]', image: null, author: 'Patito Sexy' },
-  { id: 3, title: 'Aventuras Espaciales', description: 'Crónicas de un viaje a través de la galaxia.', coverColor: 'bg-[#D4C1EC]', image: null, author: 'Patito Sexy' }
 ];
 
 export default function ProyectosPage() {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
-  const [projects, setProjects] = useState(INITIAL_PROJECTS);
+  const [projects, setProjects] = useState([]); // arranca vacio para cargar de la bd
   const [viewMode, setViewMode] = useState('carousel'); 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -46,6 +40,49 @@ export default function ProyectosPage() {
   const [formImage, setFormImage] = useState(''); 
 
   const [terminoBusqueda, setTerminoBusqueda] = useState('');
+  
+  // datos reales del usuario logueado
+  const [currentUser, setCurrentUser] = useState({ id: null, name: 'Cargando...' });
+
+  // carga inicial al entrar a la pagina
+  useEffect(() => {
+    cargarDatos();
+  }, []);
+
+  const cargarDatos = async () => {
+    // sacamos quien inicio sesion
+    const { data: authData } = await supabase.auth.getUser();
+    if (!authData.user) return;
+
+    // sacamos su nombre de usuario de nuestra tabla
+    const { data: perfil } = await supabase
+      .from('usuarios')
+      .select('nombre_usuario')
+      .eq('id', authData.user.id)
+      .single();
+
+    const userName = perfil?.nombre_usuario || 'Escritor Anonimo';
+    setCurrentUser({ id: authData.user.id, name: userName });
+
+    // jalamos sus proyectos
+    const { data: proyectosBd } = await supabase
+      .from('proyectos')
+      .select('*')
+      .order('fecha_creacion', { ascending: false });
+
+    if (proyectosBd) {
+      // adaptamos los nombres de la bd a los que usa tu componente Libreta
+      const mapeados = proyectosBd.map(p => ({
+        id: p.id,
+        title: p.titulo,
+        description: p.descripcion,
+        coverColor: p.color || COLORS[0],
+        image: p.portada,
+        author: userName
+      }));
+      setProjects(mapeados);
+    }
+  };
 
   const proyectosFiltrados = projects.filter(proyecto => 
     proyecto.title.toLowerCase().includes(terminoBusqueda.toLowerCase()) ||
@@ -61,39 +98,62 @@ export default function ProyectosPage() {
   const handlePrev = () => setCurrentIndex((prev) => (prev - 1 + proyectosFiltrados.length) % proyectosFiltrados.length);
   const handleOpenDetail = (project) => { setSelectedProject(project); setViewMode('detail'); };
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setFormImage(imageUrl);
+  const handleCreate = async () => {
+    // guardamos en la bd
+    const { data, error } = await supabase
+      .from('proyectos')
+      .insert([{
+        id_usuario: currentUser.id,
+        titulo: formTitle || 'Nuevo Proyecto',
+        descripcion: formDesc || 'Sin descripción',
+        color: formColor,
+        portada: formImage || null
+      }])
+      .select()
+      .single();
+
+    if (!error && data) {
+      // actualizamos la vista
+      const newProject = {
+        id: data.id,
+        title: data.titulo,
+        description: data.descripcion,
+        coverColor: data.color,
+        image: data.portada,
+        author: currentUser.name 
+      };
+      setProjects([newProject, ...projects]); // lo ponemos al principio
+      setShowCreateModal(false);
+      resetForm();
     }
   };
 
-  const handleCreate = () => {
-    const newProject = {
-      id: crypto.randomUUID(),
-      title: formTitle || 'Nuevo Proyecto',
-      description: formDesc || 'Sin descripción',
-      coverColor: formColor,
-      image: formImage || null,
-      author: 'Patito Sexy' 
-    };
-    setProjects([...projects, newProject]);
-    setShowCreateModal(false);
-    resetForm();
+  const handleUpdate = async () => {
+    const { error } = await supabase
+      .from('proyectos')
+      .update({
+        titulo: formTitle,
+        descripcion: formDesc,
+        color: formColor,
+        portada: formImage || null
+      })
+      .eq('id', editingProject.id);
+
+    if (!error) {
+      setProjects(projects.map(p => p.id === editingProject.id ? {
+        ...p, title: formTitle, description: formDesc, coverColor: formColor, image: formImage || null
+      } : p));
+      setEditingProject(null);
+      setShowCreateModal(false);
+      resetForm();
+    }
   };
 
-  const handleUpdate = () => {
-    setProjects(projects.map(p => p.id === editingProject.id ? {
-      ...p, title: formTitle, description: formDesc, coverColor: formColor, image: formImage || null
-    } : p));
-    setEditingProject(null);
-    setShowCreateModal(false);
-    resetForm();
-  };
-
-  const handleDelete = (id) => {
-    if (window.confirm('¿Estás seguro de eliminar este proyecto?')) {
+  const handleDelete = async (id) => {
+    if (window.confirm('¿Estás seguro de eliminar este proyecto? Todo su mundo se borrará.')) {
+      // la bd borra en cascada gracias al RLS y las FK que pusimos
+      await supabase.from('proyectos').delete().eq('id', id);
+      
       setProjects(projects.filter(p => p.id !== id));
       if (viewMode === 'detail') setViewMode('carousel');
       if (currentIndex >= proyectosFiltrados.length - 1) setCurrentIndex(0);
@@ -122,8 +182,9 @@ export default function ProyectosPage() {
 
       <main className={`flex-1 transition-all duration-300 ${isSidebarExpanded ? 'ml-64' : 'ml-24'} p-4 md:p-8`}>
         
+        {/* le pasamos el nombre real al header */}
         <Header 
-            user={{name: "Patito Sexy"}} 
+            user={{name: currentUser.name}} 
             onSearch={handleSearch} 
             title="Proyectos" 
         />
@@ -146,7 +207,7 @@ export default function ProyectosPage() {
               <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-20 text-slate-400">
                 <Search size={48} className="mb-4 opacity-50" />
                 <h3 className="text-xl font-bold">No se encontraron proyectos</h3>
-                <p>Intenta buscar con otras palabras.</p>
+                <p>Crea tu primer mundo para empezar.</p>
               </motion.div>
             )}
 
@@ -212,16 +273,10 @@ export default function ProyectosPage() {
                     {PROJECT_SECTIONS.map((section, idx) => (
                       <Link 
                         key={section.id} 
-                        href={section.href}
+                        href={`${section.href}?proyecto_id=${selectedProject.id}`} // pasamos el id por url
                         className={`group flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all ${idx === 0 ? 'bg-[#BFD7ED]/60 hover:bg-[#BFD7ED] text-slate-900' : 'bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-800'}`}
                       >
                         <div className="flex items-center gap-4">
-                          <div className={`w// Header.js Línea 37
-                          <Link href="/login" className="...">Entrar</Link>
-                          
-                          // src/app/page.js Línea 8
-                          <Link href="/login" className="...">Comenzar</Link>
-                          -2.5 h-2.5 rounded-full transition-colors ${idx === 0 ? 'bg-[#FF5C5C]' : 'bg-slate-300 group-hover:bg-[#FF5C5C]'}`} />
                           <div className={`w-2.5 h-2.5 rounded-full transition-colors ${idx === 0 ? 'bg-[#FF5C5C]' : 'bg-slate-300 group-hover:bg-[#FF5C5C]'}`} />
                           <span className="font-bold text-xl">{section.label}</span>
                         </div>
@@ -261,13 +316,9 @@ export default function ProyectosPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Portada (URL o Archivo)</label>
+                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Portada (URL de la imagen)</label>
                     <div className="flex gap-2">
-                      <input type="text" placeholder="Pega la URL aquí..." value={formImage} onChange={(e) => setFormImage(e.target.value)} className="flex-1 bg-slate-50 border-none rounded-xl p-3 outline-none focus:ring-2 focus:ring-[#FFB7C5] transition-all text-sm" />
-                      <label className="bg-[#BFD7ED] hover:bg-[#a6c8e6] text-slate-700 px-4 py-3 rounded-xl cursor-pointer transition-colors flex items-center justify-center">
-                        <ImageIcon size={18} />
-                        <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-                      </label>
+                      <input type="text" placeholder="Pega la URL de la imagen aquí..." value={formImage} onChange={(e) => setFormImage(e.target.value)} className="flex-1 bg-slate-50 border-none rounded-xl p-3 outline-none focus:ring-2 focus:ring-[#FFB7C5] transition-all text-sm" />
                     </div>
                     {formImage && (
                       <div className="mt-3 relative h-28 rounded-xl overflow-hidden border-2 border-slate-100 group">

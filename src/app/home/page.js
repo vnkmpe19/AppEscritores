@@ -26,7 +26,7 @@ export default function HomePage() {
                      [writing-mode:vertical-lr] rotate-180
                      hover:text-black hover:scale-110 transition-all duration-300"
         >
-          Worldbuilding
+          Mundos
         </Link>
 
         <Link 
