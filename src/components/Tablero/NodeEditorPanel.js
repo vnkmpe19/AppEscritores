@@ -89,37 +89,40 @@ export default function NodeEditorPanel({ node, onClose, onUpdate }) {
   if (!node) return null;
 
   return (
-    <div className="w-80 bg-white rounded-[40px] shadow-xl border border-slate-100 flex flex-col max-h-[calc(100vh-200px)] overflow-hidden">
-      <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-        <h3 className="font-black text-slate-800">Editar nodo</h3>
+    <div className="w-full sm:w-80 bg-white rounded-t-[30px] sm:rounded-[40px] shadow-2xl border border-slate-100 flex flex-col max-h-[85vh] sm:max-h-[calc(100vh-200px)] overflow-hidden transition-all duration-300">
+      
+      <div className="p-5 border-b border-slate-50 flex items-center justify-between bg-white shrink-0">
+        <h3 className="font-black text-slate-800 text-sm md:text-base uppercase tracking-tight">Editar nodo</h3>
         <button
           onClick={onClose}
-          className="p-2 hover:bg-slate-50 rounded-xl transition-colors"
+          className="p-2 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition-colors active:scale-90"
         >
-          <X size={18} />
+          <X size={20} />
         </button>
       </div>
 
-      <div className="p-5 overflow-y-auto flex-1 space-y-5">
-        <div>
-          <h4 className="font-bold text-sm text-slate-800 mb-1">
+      {/* Contenido scrolleable */}
+      <div className="p-5 overflow-y-auto flex-1 space-y-6 custom-scrollbar">
+        
+        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+          <h4 className="font-black text-sm md:text-base text-slate-800 mb-1 leading-tight">
             {node.data?.label || node.data?.title}
           </h4>
           {node.data?.creadoEn && (
-            <p className="text-[10px] text-slate-400">
+            <p className="text-[10px] md:text-[11px] font-bold text-slate-400">
               Creado: {formatFecha(node.data.creadoEn)}
             </p>
           )}
         </div>
 
         <div>
-          <p className="text-[10px] font-bold uppercase text-orange-500 tracking-wider mb-2 flex items-center gap-1">
+          <p className="text-[10px] font-black uppercase text-orange-500 tracking-widest mb-3 flex items-center gap-1">
             Estado
           </p>
           <select
             value={estado}
             onChange={handleEstadoChange}
-            className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 bg-white text-sm font-bold text-slate-700"
+            className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-xs md:text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-orange-500/20 transition-all cursor-pointer"
           >
             {ESTADOS.map((e) => (
               <option key={e.id} value={e.id}>
@@ -130,7 +133,7 @@ export default function NodeEditorPanel({ node, onClose, onUpdate }) {
         </div>
 
         <div>
-          <p className="text-[10px] font-bold uppercase text-orange-500 tracking-wider mb-2 flex items-center gap-1">
+          <p className="text-[10px] font-black uppercase text-orange-500 tracking-widest mb-3 flex items-center gap-2">
             <Tag size={12} />
             Marcadores
           </p>
@@ -139,10 +142,10 @@ export default function NodeEditorPanel({ node, onClose, onUpdate }) {
               <button
                 key={m.id}
                 onClick={() => toggleMarcador(m.id)}
-                className={`px-3 py-1.5 rounded-2xl text-xs font-bold transition-all ${
+                className={`px-4 py-2 rounded-xl text-[10px] md:text-xs font-black transition-all active:scale-95 ${
                   marcadores.includes(m.id)
-                    ? "bg-[#FF5C5C] text-white"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    ? "bg-[#FF5C5C] text-white shadow-md shadow-[#FF5C5C]/20"
+                    : "bg-slate-100 text-slate-500 hover:bg-slate-200"
                 }`}
               >
                 {m.label}
@@ -152,7 +155,7 @@ export default function NodeEditorPanel({ node, onClose, onUpdate }) {
         </div>
 
         <div>
-          <p className="text-[10px] font-bold uppercase text-orange-500 tracking-wider mb-2 flex items-center gap-1">
+          <p className="text-[10px] font-black uppercase text-[#7BA3C9] tracking-widest mb-3 flex items-center gap-2">
             <Layers size={12} />
             Capas narrativas
           </p>
@@ -161,10 +164,10 @@ export default function NodeEditorPanel({ node, onClose, onUpdate }) {
               <button
                 key={c.id}
                 onClick={() => toggleCapa(c.id)}
-                className={`px-3 py-1.5 rounded-2xl text-xs font-bold transition-all ${
+                className={`px-4 py-2 rounded-xl text-[10px] md:text-xs font-black transition-all active:scale-95 ${
                   capas.includes(c.id)
-                    ? "bg-[#7BA3C9] text-white"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    ? "bg-[#7BA3C9] text-white shadow-md shadow-[#7BA3C9]/20"
+                    : "bg-slate-100 text-slate-500 hover:bg-slate-200"
                 }`}
               >
                 {c.label}
@@ -174,13 +177,13 @@ export default function NodeEditorPanel({ node, onClose, onUpdate }) {
         </div>
 
         <div>
-          <p className="text-[10px] font-bold uppercase text-orange-500 tracking-wider mb-2">
+          <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-3">
             Emoción predominante
           </p>
           <select
             value={emocion || ""}
             onChange={handleEmocionChange}
-            className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 bg-white text-sm font-bold text-slate-700"
+            className="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white text-xs md:text-sm font-bold text-slate-700 outline-none transition-all cursor-pointer"
           >
             <option value="">Ninguna</option>
             {EMOCIONES.map((e) => (
@@ -192,22 +195,24 @@ export default function NodeEditorPanel({ node, onClose, onUpdate }) {
         </div>
 
         {node.data?.historial?.length > 0 && (
-          <div>
-            <p className="text-[10px] font-bold uppercase text-orange-500 tracking-wider mb-2 flex items-center gap-1">
+          <div className="pb-4">
+            <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-3 flex items-center gap-1">
               <History size={12} />
               Historial
             </p>
-            <div className="space-y-1.5 max-h-32 overflow-y-auto">
+            <div className="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
               {node.data.historial.map((h, i) => (
                 <div
                   key={i}
-                  className="text-[11px] text-slate-600 py-1.5 px-3 rounded-xl bg-slate-50"
+                  className="text-[10px] md:text-[11px] text-slate-600 py-2 px-3 rounded-xl bg-slate-50 border border-slate-100"
                 >
-                  <span className="font-bold">{h.accion}</span>
-                  {h.valor && <span> → {h.valor}</span>}
-                  <span className="text-slate-400 ml-2">
-                    {formatFecha(h.fecha)}
-                  </span>
+                  <div className="flex justify-between items-start gap-2">
+                    <span className="font-black text-slate-700 uppercase tracking-tighter">{h.accion.replace('_', ' ')}</span>
+                    <span className="text-slate-300 font-bold whitespace-nowrap">
+                      {formatFecha(h.fecha)}
+                    </span>
+                  </div>
+                  {h.valor && <div className="text-slate-400 mt-1 font-medium">Nuevo valor: <span className="text-orange-400 font-bold">{h.valor}</span></div>}
                 </div>
               ))}
             </div>

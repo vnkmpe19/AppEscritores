@@ -6,50 +6,65 @@ import Image from 'next/image';
 
 export default function HomePage() {
   return (
-    <main className="relative w-full h-screen overflow-hidden bg-[#FEFFE8] font-serif">
+    <main className="relative w-full h-screen bg-[#FEFFE8] font-serif overflow-hidden">
       
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0">
         <Image 
           src="/fondoHome_Mesa de trabajo 1.png" 
           alt="Habitación Creativa" 
           fill
-          className="object-cover select-none" 
+          className="object-contain object-center select-none block" 
+          priority
         />
       </div>
 
-      <div className="relative z-10 w-full h-full text-[#334155]">
-        
+      <div className="absolute inset-0 text-[#334155]">
+
         <Link 
           href="/mundo" 
-          className="absolute left-[14%] top-[50%] -translate-y-1/2 
-                     text-3xl md:text-5xl font-bold 
-                     [writing-mode:vertical-lr] rotate-180
-                     hover:text-black hover:scale-110 transition-all duration-300"
+          className="
+            absolute
+            left-[11%] top-[35%]
+            text-[2.5vw] font-bold
+            [writing-mode:vertical-lr] rotate-180
+            hover:text-black hover:scale-110 transition-all duration-300
+          "
         >
           Mundos
         </Link>
 
         <Link 
           href="/personajes" 
-          className="absolute left-[43%] bottom-[28%] -translate-x-1/2
-                     text-3xl md:text-6xl font-bold 
-                     hover:text-black hover:scale-110 transition-all duration-300"
+          className="
+            absolute
+            left-[38%] bottom-[6%]
+            -translate-x-1/2
+            text-[3.5vw] font-bold
+            hover:text-black hover:scale-110 transition-all duration-300
+          "
         >
           Personajes
         </Link>
 
         <Link 
           href="/proyectos" 
-          className="absolute left-[75%] bottom-[28%] -translate-x-1/2
-                     text-3xl md:text-6xl font-bold 
-                     hover:text-black hover:scale-110 transition-all duration-300"
+          className="
+            absolute
+            left-[65%] bottom-[6%]
+            -translate-x-1/2
+            text-[3.5vw] font-bold
+            hover:text-black hover:scale-110 transition-all duration-300
+          "
         >
           Proyectos
         </Link>
 
       </div>
 
-      <Link href="/ocurrencias" className="absolute bottom-[4%] right-[4%] w-[10vw] max-w-37.5 z-20">
+      <Link 
+        href="/ocurrencias" 
+        className="absolute bottom-[3%] right-[3%] w-[8vw] max-w-[120px] min-w-[40px] z-20"
+      >
         <Image 
           src="/bombilla.png" 
           alt="Idea" 

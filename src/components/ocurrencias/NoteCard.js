@@ -59,11 +59,25 @@ export default function NoteCard({ note, onDelete, onToggleItem }) {
 
       <h3 className="font-black text-lg sm:text-xl text-slate-800 mb-3 sm:mb-4 pr-8 sm:pr-10 leading-tight">{note.title}</h3>
       
+      {(note.imagen_url || note.foto || note.imagen) && (
+        <div className="rounded-xl overflow-hidden mb-3 shadow-sm border border-slate-50 bg-slate-50">
+          <img 
+            src={note.imagen_url || note.foto || note.imagen} 
+            alt="Imagen adjunta" 
+            className="w-full h-32 object-cover hover:scale-105 transition-transform duration-500" 
+          />
+        </div>
+      )}
+
       {note.type === 'list' && note.items ? (
         <div className="space-y-2.5 sm:space-y-3 mt-1">
           {note.items.map((item, i) => (
             <div key={i} className="flex items-start sm:items-center gap-2.5 sm:gap-3 cursor-pointer group/item" onClick={() => onToggleItem && onToggleItem(i)}>
-              <div className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 rounded-md border flex items-center justify-center transition-colors mt-0.5 ${item.done ? 'bg-[#BFD7ED] border-[#BFD7ED]' : 'border-slate-300 group-hover/item:border-[#BFD7ED]'}`} />
+              <div className={`w-4 h-4 sm:w-5 sm:h-5 shrink-0 rounded-md border flex items-center justify-center transition-colors mt-0.5 ${item.done ? 'bg-[#BFD7ED] border-[#BFD7ED]' : 'border-slate-300 group-hover/item:border-[#BFD7ED]'}`}>
+                {item.done && (
+                  <svg viewBox="0 0 10 8" fill="none" className="w-2.5 h-2.5"><path d="M1 4l2.5 2.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                )}
+              </div>
               <span className={`text-xs sm:text-sm font-medium leading-snug transition-colors ${item.done ? 'line-through text-slate-300' : 'text-slate-600 group-hover/item:text-slate-800'}`}>{item.text}</span>
             </div>
           ))}

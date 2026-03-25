@@ -6,36 +6,46 @@ const { Lightbulb } = require('lucide-react');
 
 export default function Sidebar({ isExpanded, setIsExpanded, viewMode }) {
   return (
-    <aside
-      onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => setIsExpanded(false)}
-      className={`fixed left-0 top-0 h-full bg-[#BFD7ED] transition-all duration-300 z-50 flex flex-col py-8 rounded-r-[40px] shadow-xl ${
-        isExpanded ? 'w-64' : 'w-20'
-      }`}
-    >
-      <div className="flex flex-col gap-4 w-full">
-        <SidebarItem icon={<Home />} label="Home" expanded={isExpanded} href="/home" active={viewMode === 'home'} />
-    
-        <SidebarItem icon={<User />} label="Personajes" expanded={isExpanded} href="/personajes" active={viewMode === 'personajes'} />
-        <SidebarItem icon={<PlusSquare />} label="Proyectos" expanded={isExpanded} href="/proyectos" active={viewMode === 'proyectos'} />
-        <SidebarItem icon={<Edit3 />} label="Escenas" expanded={isExpanded} href="/escenas" active={viewMode === 'escenas'} />
-        <SidebarItem icon={<Globe />} label="Mundo" expanded={isExpanded} href="/mundo" active={viewMode === 'mundo'} />
-        
-        <SidebarItem 
-          icon={<LayoutGrid />} 
-          label="Tablero" 
-          expanded={isExpanded} 
-          href="/tablero" 
-          active={viewMode === 'tablero'} 
+    <>
+      {/* Backdrop para cerrar al tocar fuera en móvil */}
+      {isExpanded && (
+        <div 
+          className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-[90] md:hidden transition-opacity"
+          onClick={() => setIsExpanded(false)}
         />
-      </div>
+      )}
 
-      <div className="mt-auto flex justify-center w-full">
-        <Link href="/ocurrencias" className="w-12 h-12 bg-[#719fd7] rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:bg-black transition-colors border-2 border-white/20">
-          <Lightbulb className="text-white" size={24} />
-        </Link>
-      </div>
-    </aside>
+      <aside
+        onMouseEnter={() => setIsExpanded(true)}
+        onMouseLeave={() => setIsExpanded(false)}
+        className={`fixed left-0 top-0 h-full bg-[#BFD7ED] transition-all duration-300 z-[100] flex flex-col py-8 rounded-r-[40px] shadow-xl ${
+          isExpanded ? 'w-64 translate-x-0' : 'w-20 -translate-x-full md:translate-x-0'
+        }`}
+      >
+        <div className="flex flex-col gap-4 w-full">
+          <SidebarItem icon={<Home />} label="Home" expanded={isExpanded} href="/home" active={viewMode === 'home'} />
+      
+          <SidebarItem icon={<User />} label="Personajes" expanded={isExpanded} href="/personajes" active={viewMode === 'personajes'} />
+          <SidebarItem icon={<PlusSquare />} label="Proyectos" expanded={isExpanded} href="/proyectos" active={viewMode === 'proyectos'} />
+          <SidebarItem icon={<Edit3 />} label="Escenas" expanded={isExpanded} href="/escenas" active={viewMode === 'escenas'} />
+          <SidebarItem icon={<Globe />} label="Mundo" expanded={isExpanded} href="/mundo" active={viewMode === 'mundo'} />
+          
+          <SidebarItem 
+            icon={<LayoutGrid />} 
+            label="Tablero" 
+            expanded={isExpanded} 
+            href="/tablero" 
+            active={viewMode === 'tablero'} 
+          />
+        </div>
+
+        <div className="mt-auto flex justify-center w-full">
+          <Link href="/ocurrencias" className="w-12 h-12 bg-[#719fd7] rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:bg-black transition-colors border-2 border-white/20">
+            <Lightbulb className="text-white" size={24} />
+          </Link>
+        </div>
+      </aside>
+    </>
   );
 }
 

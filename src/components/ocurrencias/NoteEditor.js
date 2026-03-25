@@ -1,12 +1,14 @@
 "use client";
 import React, { useState, useRef } from 'react';
-import { Plus, Image as ImageIcon, X, CheckSquare, AlignLeft } from 'lucide-react';
+import { Plus, Image as ImageIcon, X, CheckSquare, AlignLeft, Loader2 } from 'lucide-react';
+import { supabase } from '@/app/lib/supabase';
 
 export default function NoteEditor({ onSave, onClose, data }) {
   const [title, setTitle] = useState(data?.title || '');
   const [content, setContent] = useState(data?.content || '');
   const [listItems, setListItems] = useState(data?.items || []);
-  const [image, setImage] = useState(data?.image || null);
+  const [image, setImage] = useState(data?.imagen_url || data?.foto || data?.imagen || null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef(null);
 
   const wordCount = content.trim() === '' ? 0 : content.trim().split(/\s+/).length;
@@ -15,9 +17,18 @@ export default function NoteEditor({ onSave, onClose, data }) {
     setListItems([...listItems, { id: Date.now(), text: '', done: false }]);
   };
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    if (file) setImage(URL.createObjectURL(file));
+    if (!file) return;
+    setUploadingImage(true);
+    const ext = file.name.split('.').pop();
+    const path = `ocurrencias/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from('imagenes').upload(path, file, { upsert: true });
+    if (!error) {
+      const { data: { publicUrl } } = supabase.storage.from('imagenes').getPublicUrl(path);
+      setImage(publicUrl);
+    }
+    setUploadingImage(false);
   };
 
   return (
@@ -90,8 +101,8 @@ export default function NoteEditor({ onSave, onClose, data }) {
         <div className="flex items-center gap-4 md:gap-5 text-slate-400 w-full sm:w-auto justify-center sm:justify-start">
           <button onClick={addListItem} title="Añadir Checklist" className="hover:text-[#FFB7C5] transition-colors p-1"><CheckSquare size={18} className="md:w-5 md:h-5" /></button>
           
-          <button onClick={() => fileInputRef.current.click()} title="Añadir Imagen" className="hover:text-[#FFB7C5] transition-colors p-1">
-            <ImageIcon size={18} className="md:w-5 md:h-5" />
+          <button onClick={() => !uploadingImage && fileInputRef.current.click()} title="Añadir Imagen" className="hover:text-[#FFB7C5] transition-colors p-1 relative">
+            {uploadingImage ? <Loader2 size={18} className="animate-spin" /> : <ImageIcon size={18} className="md:w-5 md:h-5" />}
             <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
           </button>
 
@@ -104,7 +115,7 @@ export default function NoteEditor({ onSave, onClose, data }) {
           <button onClick={onClose} className="flex-1 sm:flex-none text-[10px] md:text-xs font-black text-slate-400 px-3 md:px-4 py-2 md:py-2 hover:bg-slate-200 rounded-lg md:rounded-xl uppercase transition-colors">
             Cerrar
           </button>
-          <button onClick={() => onSave({ title, content, items: listItems, image })} className="flex-1 sm:flex-none text-[10px] md:text-xs font-black bg-[#FFB7C5] text-white px-4 md:px-6 py-2 md:py-2 rounded-lg md:rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all uppercase">
+          <button onClick={() => onSave({ title, content, items: listItems, imagen_url: image })} disabled={uploadingImage} className="flex-1 sm:flex-none text-[10px] md:text-xs font-black bg-[#FFB7C5] text-white px-4 md:px-6 py-2 md:py-2 rounded-lg md:rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed">
             Guardar
           </button>
         </div>

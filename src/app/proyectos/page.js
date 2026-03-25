@@ -21,12 +21,13 @@ const PROJECT_SECTIONS = [
   { id: 'personajes', label: 'Personajes', href: '/personajes' },
   { id: 'escenas', label: 'Escenas', href: '/escenas' },
   { id: 'Mundo', label: 'Mundo', href: '/mundo' },
-  { id: 'ocurrencias', label: 'Ocurrencias', href: '/ocurrencias' }
+  { id: 'ocurrencias', label: 'Ocurrencias', href: '/ocurrencias' },
+  { id: 'tablero', label: 'Tablero', href: '/tablero' } // <-- Botón nuevo agregado
 ];
 
 export default function ProyectosPage() {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
-  const [projects, setProjects] = useState([]); // arranca vacio para cargar de la bd
+  const [projects, setProjects] = useState([]); 
   const [viewMode, setViewMode] = useState('carousel'); 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -41,20 +42,16 @@ export default function ProyectosPage() {
 
   const [terminoBusqueda, setTerminoBusqueda] = useState('');
   
-  // datos reales del usuario logueado
   const [currentUser, setCurrentUser] = useState({ id: null, name: 'Cargando...' });
 
-  // carga inicial al entrar a la pagina
   useEffect(() => {
     cargarDatos();
   }, []);
 
   const cargarDatos = async () => {
-    // sacamos quien inicio sesion
     const { data: authData } = await supabase.auth.getUser();
     if (!authData.user) return;
 
-    // sacamos su nombre de usuario de nuestra tabla
     const { data: perfil } = await supabase
       .from('usuarios')
       .select('nombre_usuario')
@@ -64,14 +61,12 @@ export default function ProyectosPage() {
     const userName = perfil?.nombre_usuario || 'Escritor Anonimo';
     setCurrentUser({ id: authData.user.id, name: userName });
 
-    // jalamos sus proyectos
     const { data: proyectosBd } = await supabase
       .from('proyectos')
       .select('*')
       .order('fecha_creacion', { ascending: false });
 
     if (proyectosBd) {
-      // adaptamos los nombres de la bd a los que usa tu componente Libreta
       const mapeados = proyectosBd.map(p => ({
         id: p.id,
         title: p.titulo,
@@ -99,7 +94,6 @@ export default function ProyectosPage() {
   const handleOpenDetail = (project) => { setSelectedProject(project); setViewMode('detail'); };
 
   const handleCreate = async () => {
-    // guardamos en la bd
     const { data, error } = await supabase
       .from('proyectos')
       .insert([{
@@ -113,7 +107,6 @@ export default function ProyectosPage() {
       .single();
 
     if (!error && data) {
-      // actualizamos la vista
       const newProject = {
         id: data.id,
         title: data.titulo,
@@ -122,7 +115,7 @@ export default function ProyectosPage() {
         image: data.portada,
         author: currentUser.name 
       };
-      setProjects([newProject, ...projects]); // lo ponemos al principio
+      setProjects([newProject, ...projects]); 
       setShowCreateModal(false);
       resetForm();
     }
@@ -151,7 +144,6 @@ export default function ProyectosPage() {
 
   const handleDelete = async (id) => {
     if (window.confirm('¿Estás seguro de eliminar este proyecto? Todo su mundo se borrará.')) {
-      // la bd borra en cascada gracias al RLS y las FK que pusimos
       await supabase.from('proyectos').delete().eq('id', id);
       
       setProjects(projects.filter(p => p.id !== id));
@@ -180,12 +172,13 @@ export default function ProyectosPage() {
         viewMode="proyectos" 
       />
 
-      <main className={`flex-1 transition-all duration-300 ${isSidebarExpanded ? 'ml-64' : 'ml-24'} p-4 md:p-8`}>
+      <main className={`flex-1 transition-all duration-300 ${isSidebarExpanded ? 'md:ml-64' : 'md:ml-24'} ml-0 p-4 md:p-8`}>
         
-        {/* le pasamos el nombre real al header */}
         <Header 
             user={{name: currentUser.name}} 
             onSearch={handleSearch} 
+            onMenuClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+            isSidebarExpanded={isSidebarExpanded}
             title="Proyectos" 
         />
 
@@ -270,17 +263,17 @@ export default function ProyectosPage() {
                   <p className="text-lg text-slate-500 mb-10 leading-relaxed">{selectedProject.description}</p>
                   
                   <div className="space-y-3">
-                    {PROJECT_SECTIONS.map((section, idx) => (
+                    {PROJECT_SECTIONS.map((section) => (
                       <Link 
                         key={section.id} 
-                        href={`${section.href}?proyecto_id=${selectedProject.id}`} // pasamos el id por url
-                        className={`group flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all ${idx === 0 ? 'bg-[#BFD7ED]/60 hover:bg-[#BFD7ED] text-slate-900' : 'bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-800'}`}
+                        href={`${section.href}?proyecto_id=${selectedProject.id}`}
+                        className="group flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all bg-slate-50 hover:bg-[#BFD7ED]/60 text-slate-500 hover:text-slate-900"
                       >
                         <div className="flex items-center gap-4">
-                          <div className={`w-2.5 h-2.5 rounded-full transition-colors ${idx === 0 ? 'bg-[#FF5C5C]' : 'bg-slate-300 group-hover:bg-[#FF5C5C]'}`} />
+                          <div className="w-2.5 h-2.5 rounded-full transition-colors bg-slate-300 group-hover:bg-[#FF5C5C]" />
                           <span className="font-bold text-xl">{section.label}</span>
                         </div>
-                        <ChevronRight size={24} className={`transition-opacity ${idx === 0 ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
+                        <ChevronRight size={24} className="transition-opacity opacity-0 group-hover:opacity-100" />
                       </Link>
                     ))}
                   </div>

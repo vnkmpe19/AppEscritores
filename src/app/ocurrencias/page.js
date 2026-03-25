@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Plus, Edit3, SearchX, Sparkles, Loader2 } from 'lucide-react';
+import { Plus, Edit3, SearchX, Sparkles, Loader2, FolderOpen, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/app/lib/supabase';
+import { useSearchParams } from 'next/navigation';
 
 import Sidebar from '@/components/common/Sidebar';
 import Header from '@/components/common/Header';
@@ -12,9 +13,16 @@ import NoteCard from '@/components/ocurrencias/NoteCard';
 import NoteEditor from '@/components/ocurrencias/NoteEditor';
 
 export default function OcurrenciasPage() {
+  const searchParams = useSearchParams();
+  const initialProjectId = searchParams.get('proyecto_id');
+
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [user, setUser] = useState({ name: 'Cargando...', role: 'Usuario' });
-  const [proyectoId, setProyectoId] = useState(null);
+  const [userId, setUserId] = useState(null);
+  
+  const [proyectoId, setProyectoId] = useState(initialProjectId);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [projects, setProjects] = useState([]);
   
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,22 +38,36 @@ export default function OcurrenciasPage() {
   const inicializar = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
+      setUserId(user.id);
       setUser({ name: user.user_metadata?.nombre || user.email.split('@')[0], role: 'Escritor' });
-      const { data: proyectos } = await supabase
-        .from('proyectos')
-        .select('id')
-        .eq('id_usuario', user.id)
-        .order('fecha_actualizacion', { ascending: false })
-        .limit(1);
-
-      if (proyectos && proyectos.length > 0) {
-        const pId = proyectos[0].id;
-        setProyectoId(pId);
-        cargarNotas(pId);
+      
+      if (proyectoId) {
+        // Cargar proyecto específico
+        const { data: p } = await supabase.from('proyectos').select('*').eq('id', proyectoId).single();
+        if (p) {
+          setSelectedProject(p);
+          cargarNotas(proyectoId);
+        } else {
+          // Si el ID no es válido, cargar lista
+          fetchProjects(user.id);
+        }
       } else {
-        setLoading(false);
+        // Cargar lista de proyectos
+        fetchProjects(user.id);
       }
     }
+  };
+
+  const fetchProjects = async (userId) => {
+    setLoading(true);
+    const { data } = await supabase
+      .from('proyectos')
+      .select('*')
+      .eq('id_usuario', userId)
+      .order('fecha_actualizacion', { ascending: false });
+
+    if (data) setProjects(data);
+    setLoading(false);
   };
 
   const cargarNotas = async (pId) => {
@@ -69,6 +91,7 @@ export default function OcurrenciasPage() {
 
   const saveNote = async (noteData) => {
     if (!proyectoId) return alert("Necesitas un proyecto activo para guardar notas.");
+    if (!userId) return alert("No se ha podido identificar al usuario. Por favor, inicia sesión de nuevo.");
     if (!noteData.title || noteData.title.trim() === '') noteData.title = "Idea sin título";
 
     const payload = {
@@ -77,15 +100,27 @@ export default function OcurrenciasPage() {
       type: noteData.items && noteData.items.length > 0 ? 'list' : 'text',
       content: noteData.content,
       items: noteData.items,
+      imagen_url: noteData.foto || noteData.imagen_url || null,
       orden: editingNote ? editingNote.orden : notes.length
     };
 
+    console.log("Payload a enviar:", payload);
+
     if (editingNote) {
       setNotes(notes.map(n => n.id === editingNote.id ? { ...n, ...payload } : n));
-      await supabase.from('ocurrencias').update(payload).eq('id', editingNote.id);
+      const { error } = await supabase.from('ocurrencias').update(payload).eq('id', editingNote.id);
+      if (error) {
+        console.error("Error al actualizar:", error);
+        alert("Error al actualizar: " + error.message);
+      }
     } else {
       const { data, error } = await supabase.from('ocurrencias').insert([payload]).select().single();
-      if (!error && data) setNotes([data, ...notes]);
+      if (error) {
+        console.error("Error al insertar:", error);
+        alert("Error al insertar: " + error.message);
+      } else if (data) {
+        setNotes([data, ...notes]);
+      }
     }
     closeEditor();
   };
@@ -115,13 +150,21 @@ export default function OcurrenciasPage() {
 
   const onDragEnd = async (result) => {
     if (!result.destination) return;
-    const items = Array.from(notasFiltradas);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-    
-    setNotes(items);
 
-    const updates = items.map((item, index) => ({ id: item.id, orden: index }));
+    // Reordenamos dentro de la lista filtrada
+    const reordenadas = Array.from(notasFiltradas);
+    const [moved] = reordenadas.splice(result.source.index, 1);
+    reordenadas.splice(result.destination.index, 0, moved);
+
+    // Reconstruimos el array completo: las notas que NO están en el filtro
+    // conservan su posición, y las reordenadas reemplazan sus posiciones en orden
+    const filtradas_ids = new Set(reordenadas.map(n => n.id));
+    const noFiltradas = notes.filter(n => !filtradas_ids.has(n.id));
+    const nuevasNotes = [...reordenadas, ...noFiltradas];
+    setNotes(nuevasNotes);
+
+    // Persistir solo los ordenes de las notas que se movieron
+    const updates = reordenadas.map((item, index) => ({ id: item.id, orden: index }));
     for (const update of updates) {
       await supabase.from('ocurrencias').update({ orden: update.orden }).eq('id', update.id);
     }
@@ -135,21 +178,54 @@ export default function OcurrenciasPage() {
   return (
     <div className="flex min-h-screen bg-[#FFF5F5] font-sans text-slate-800 overflow-x-hidden">
       <Sidebar isExpanded={isSidebarExpanded} setIsExpanded={setIsSidebarExpanded} viewMode="notes" />
-      <main className={`flex-1 transition-all duration-300 ${isSidebarExpanded ? 'md:ml-64' : 'ml-0 md:ml-20'} p-4 md:p-8 pt-20 md:pt-8 w-full`}>
-        <Header user={user} onLogout={async () => { await supabase.auth.signOut(); window.location.href = '/'; }} onSearch={setBusqueda} title="Ocurrencias" />
+      <main className={`flex-1 transition-all duration-300 ${isSidebarExpanded ? 'md:ml-64' : 'md:ml-24'} ml-0 p-4 md:p-8 flex flex-col h-screen overflow-y-auto`}>
+        <Header 
+          user={user} 
+          onLogout={async () => { await supabase.auth.signOut(); window.location.href = '/'; }} 
+          onSearch={setBusqueda} 
+          onMenuClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+          isSidebarExpanded={isSidebarExpanded}
+          title="Ocurrencias" 
+        />
 
         <div className="max-w-6xl mx-auto relative min-h-[500px]">
           {loading ? (
              <div className="flex flex-col items-center justify-center h-64 md:h-96 text-slate-400">
                <Loader2 size={48} className="animate-spin mb-4 text-[#FFB7C5]" />
-               <p className="font-bold tracking-tight opacity-60">Recuperando tus ideas...</p>
+               <p className="font-bold tracking-tight opacity-60">Recuperando información...</p>
              </div>
           ) : !proyectoId ? (
-            <div className="flex flex-col items-center justify-center h-64 md:h-96 text-slate-400">
-              <Edit3 size={64} className="mb-4 opacity-40 text-red-400" />
-              <p className="font-bold tracking-tight opacity-60 text-center px-4">Necesitas crear o abrir un Proyecto primero.</p>
-            </div>
-          ) : busqueda !== "" && notasFiltradas.length === 0 ? (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} 
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {projects.length === 0 ? (
+                <div className="col-span-full text-center py-20 text-slate-400">
+                  <FolderOpen size={48} className="mx-auto mb-4 opacity-20" />
+                  <p className="font-bold">No tienes proyectos creados aún.</p>
+                </div>
+              ) : projects.map(p => (
+                <div key={p.id} onClick={() => { setProyectoId(p.id); setSelectedProject(p); cargarNotas(p.id); }} 
+                     className="group bg-white p-6 md:p-8 rounded-[30px] md:rounded-[40px] shadow-sm border border-slate-100 hover:shadow-xl hover:scale-105 transition-all cursor-pointer text-center flex flex-col items-center">
+                  <div className={`w-20 h-24 mb-6 rounded-xl rotate-3 group-hover:rotate-0 transition-transform shadow-lg ${p.color || 'bg-[#BFD7ED]'} flex items-center justify-center p-2`}>
+                     {p.portada ? <img src={p.portada} className="w-full h-full object-cover rounded-lg" /> : <div className="w-full h-full border-2 border-white/30 rounded-lg" />}
+                  </div>
+                  <h3 className="text-xl font-serif font-black text-slate-900 mb-2 truncate w-full">{p.titulo}</h3>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-[#F497A9]">Ver Ocurrencias</p>
+                </div>
+              ))}
+            </motion.div>
+          ) : (
+            <div className="flex flex-col gap-6">
+              <div className="flex justify-between items-center mb-4">
+                <button onClick={() => { setProyectoId(null); setSelectedProject(null); }} className="flex items-center gap-2 text-slate-400 hover:text-[#FF5C5C] font-bold text-xs uppercase tracking-widest transition-colors">
+                  <ArrowLeft size={16} /> Cambiar Proyecto
+                </button>
+                <div className="bg-white/60 backdrop-blur-sm border border-white/50 px-6 py-2 rounded-full shadow-sm">
+                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Proyecto:</p>
+                   <p className="text-sm font-serif font-black text-slate-900">{selectedProject?.titulo}</p>
+                </div>
+              </div>
+
+              {busqueda !== "" && notasFiltradas.length === 0 ? (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center justify-center h-64 md:h-96 text-center px-4">
               <div className="bg-white p-6 md:p-10 rounded-[30px] md:rounded-[40px] shadow-sm border border-slate-100 flex flex-col items-center gap-4 w-full max-w-md">
                 <div className="p-4 bg-[#FFB7C5]/30 rounded-full text-[#FF5C5C]">
@@ -186,6 +262,8 @@ export default function OcurrenciasPage() {
                 )}
               </Droppable>
             </DragDropContext>
+              )}
+            </div>
           )}
         </div>
       </main>

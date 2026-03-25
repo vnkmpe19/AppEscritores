@@ -3,10 +3,11 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { 
-  ChevronLeft, Brain, Users, Star, Lightbulb, Plus, Zap, Target, History, Theater 
+  ChevronLeft, Brain, Users, Star, Zap, Target, History, Theater 
 } from 'lucide-react';
 import Sidebar from '@/components/common/Sidebar';
 import Header from '@/components/common/Header';
+import { supabase } from '@/app/lib/supabase';
 
 import FormIdentidad from '@/components/personajes/forms/FormIdentidad';
 import FormPsicologia from '@/components/personajes/forms/FormPsicologia';
@@ -20,14 +21,73 @@ export default function FichaDetalladaPage() {
   const params = useParams();
   const [personaje, setPersonaje] = useState(null);
   const [activeTab, setActiveTab] = useState('Identidad');
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+
+  const handleUpdate = (updates) => {
+    setPersonaje((prev) => ({ ...prev, ...updates }));
+  };
+
+  const [progress, setProgress] = useState(0);
+
+  const calculateProgress = (data) => {
+    if (!data) return 0;
+    
+    // Tablas y sus campos a excluir del conteo (metadatos/IDs)
+    const exclude = ['id', 'id_proyecto', 'id_personaje', 'fecha_creacion', 'foto', 'orden'];
+    
+    let totalFields = 0;
+    let filledFields = 0;
+
+    const countObjectFields = (obj) => {
+      if (!obj || typeof obj !== 'object') return;
+      Object.entries(obj).forEach(([key, value]) => {
+        if (exclude.includes(key)) return;
+        if (Array.isArray(value)) {
+          // Si es array (ej: items de checklist), contamos si hay contenido
+          totalFields++;
+          if (value.length > 0) filledFields++;
+        } else if (typeof value === 'object' && value !== null) {
+          // Si es un objeto anidado (relación join)
+          countObjectFields(value);
+        } else {
+          totalFields++;
+          if (value && String(value).trim() !== '') filledFields++;
+        }
+      });
+    };
+
+    countObjectFields(data);
+    return totalFields > 0 ? Math.round((filledFields / totalFields) * 100) : 0;
+  };
+
+  const loadPersonaje = async () => {
+    const UuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!UuidRegex.test(params.id)) return;
+
+    // Traemos de una vez todas las tablas para el progreso
+    const { data, error } = await supabase
+      .from('personajes')
+      .select(`
+        *,
+        personaje_identidad(*),
+        personaje_psicologia(*),
+        personaje_motivaciones(*),
+        personaje_relaciones(*),
+        personaje_historia(*),
+        personaje_mascaras(*),
+        personaje_detalles_minimos(*)
+      `)
+      .eq('id', params.id)
+      .single();
+    
+    if (data) {
+      setPersonaje(data);
+      setProgress(calculateProgress(data));
+    }
+  };
 
   useEffect(() => {
-    const saved = localStorage.getItem('mis_personajes');
-    if (saved) {
-      const lista = JSON.parse(saved);
-      const encontrado = lista.find(p => p.id === params.id);
-      setPersonaje(encontrado);
-    }
+    loadPersonaje();
   }, [params.id]);
 
   if (!personaje) return (
@@ -38,9 +98,9 @@ export default function FichaDetalladaPage() {
 
   return (
     <div className="flex min-h-screen bg-[#FDF5F5] font-sans text-slate-800">
-      <Sidebar viewMode="personajes" isExpanded={false} />
+      <Sidebar viewMode="personajes" isExpanded={isSidebarExpanded} setIsExpanded={setIsSidebarExpanded} />
       
-      <main className="flex-1 ml-24 p-4 md:p-8 flex flex-col h-screen overflow-hidden">
+      <main className={`flex-1 transition-all duration-300 ${isSidebarExpanded ? 'md:ml-64' : 'md:ml-24'} ml-0 p-4 md:p-8 flex flex-col h-screen overflow-hidden`}>
         <div className="max-w-[1400px] mx-auto w-full mb-4 flex justify-between items-center">
           <Link href="/personajes" className="inline-flex items-center gap-2 text-slate-400 hover:text-[#FF5C5C] font-bold transition-colors text-xs uppercase tracking-widest no-underline">
             <ChevronLeft size={18} /> Galería de Personajes
@@ -50,11 +110,15 @@ export default function FichaDetalladaPage() {
           </div>
         </div>
 
-        <Header title={`Módulo: ${activeTab}`} user={{name: "Patito Sexy"}} />
+        <Header 
+          title={`Módulo: ${activeTab}`} 
+          onMenuClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+          isSidebarExpanded={isSidebarExpanded}
+        />
 
-        <div className="max-w-[1400px] mx-auto w-full flex flex-1 gap-6 overflow-hidden mt-4">
+        <div className="max-w-[1400px] mx-auto w-full flex flex-1 flex-col lg:flex-row gap-6 overflow-hidden mt-4">
           
-          <div className="w-72 bg-white rounded-[40px] p-6 shadow-xl border border-slate-100 flex flex-col gap-1.5 overflow-y-auto custom-scrollbar">
+          <div className="w-full lg:w-72 bg-white rounded-[30px] lg:rounded-[40px] p-4 lg:p-6 shadow-lg border border-slate-100 flex flex-col gap-1.5 overflow-y-auto custom-scrollbar shrink-0 max-h-[250px] lg:max-h-none">
             <p className="text-[10px] font-black text-slate-300 uppercase mb-4 px-4 tracking-widest">Dimensiones</p>
             
             <TabButton active={activeTab === 'Identidad'} icon={<Star size={16}/>} label="Identidad" onClick={() => setActiveTab('Identidad')} />
@@ -67,11 +131,13 @@ export default function FichaDetalladaPage() {
 
             <div className="mt-auto pt-6">
                <div className="p-6 bg-[#FDF5F5] rounded-[30px] border border-[#FFB7C5]/20 text-center">
-                  <p className="text-[9px] font-bold text-[#FFB7C5] uppercase mb-2">Complejidad</p>
+                  <p className="text-[9px] font-bold text-[#FFB7C5] uppercase mb-2">
+                    {progress === 100 ? 'Finalizado' : 'En proceso'}
+                  </p>
                   <div className="w-full h-1 bg-white rounded-full overflow-hidden">
-                     <div className="w-[65%] h-full bg-[#FFB7C5]"></div>
+                     <div className="h-full bg-[#FF5C5C] transition-all duration-1000" style={{ width: `${progress}%` }}></div>
                   </div>
-                  <p className="text-[10px] mt-2 font-bold text-slate-400">{personaje.rol}</p>
+                  <p className="text-[10px] mt-2 font-bold text-slate-400">{progress}% Completado</p>
                </div>
             </div>
           </div>
@@ -81,39 +147,26 @@ export default function FichaDetalladaPage() {
                 <div>
                     <h2 className="text-4xl font-serif font-black text-slate-900 tracking-tight">{activeTab}</h2>
                     <p className="text-slate-400 text-xs font-bold mt-1 uppercase tracking-widest">Ficha de {personaje.nombre}</p>
+                    <p className="mt-2 text-sm font-bold text-slate-400 italic">{personaje.frase_epica || ''}</p>
                 </div>
                 <div className="flex gap-4 items-center">
-                    <img src={personaje.image || '/avatar.png'} className="w-12 h-12 rounded-full object-cover border-2 border-[#BFD7ED]" alt="" />
-                    <span className="text-[10px] font-black uppercase text-slate-300 tracking-widest italic">{personaje.estado}</span>
+                    <img src={personaje.foto || '/avatar.png'} className="w-12 h-12 rounded-full object-cover border-2 border-[#BFD7ED]" alt="" />
+                    <span className="text-[10px] font-black uppercase text-slate-300 tracking-widest italic">{personaje.descripcion ? "Completado" : "Boceto"}</span>
                 </div>
              </div>
 
              <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                {activeTab === 'Identidad' && <FormIdentidad personaje={personaje} />}
-                {activeTab === 'Psicología' && <FormPsicologia personaje={personaje} />}
-                {activeTab === 'Motivaciones' && <FormMotivaciones personaje={personaje} />}
-                {activeTab === 'Relaciones' && <FormRelaciones personaje={personaje} />}
-                {activeTab === 'Historia' && <FormHistoria personaje={personaje} />}
-                {activeTab === 'Máscaras' && <FormMascaras personaje={personaje} />}
-                {activeTab === 'Detalles' && <FormDetallesMinimos personaje={personaje} />}
+                {activeTab === 'Identidad' && <FormIdentidad personaje={personaje} onUpdate={loadPersonaje} />}
+                {activeTab === 'Psicología' && <FormPsicologia personaje={personaje} onUpdate={loadPersonaje} />}
+                {activeTab === 'Motivaciones' && <FormMotivaciones personaje={personaje} onUpdate={loadPersonaje} />}
+                {activeTab === 'Relaciones' && <FormRelaciones personaje={personaje} onUpdate={loadPersonaje} />}
+                {activeTab === 'Historia' && <FormHistoria personaje={personaje} onUpdate={loadPersonaje} />}
+                {activeTab === 'Máscaras' && <FormMascaras personaje={personaje} onUpdate={loadPersonaje} />}
+                {activeTab === 'Detalles' && <FormDetallesMinimos personaje={personaje} onUpdate={loadPersonaje} />}
              </div>
           </div>
 
-          <div className="w-80 bg-[#D6EAF8]/40 backdrop-blur-sm rounded-[40px] p-8 flex flex-col shadow-lg border border-white">
-            <h3 className="font-black text-xl text-blue-900 mb-6 flex items-center gap-2">
-              <Lightbulb size={22} className="text-blue-500" /> Ideas de Arco
-            </h3>
-            
-            <div className="space-y-4">
-                <IdeaBox text={`¿Cómo reaccionaría ${personaje.nombre} si pierde su mayor tesoro?`} />
-                <IdeaBox text="Define 3 manías que lo hagan sentir humano." />
-                <IdeaBox text={`¿Cuál es el secreto más oscuro de este ${personaje.rol}?`} />
-            </div>
 
-            <button className="mt-auto flex items-center justify-center gap-2 w-full py-4 bg-white text-blue-900 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-sm">
-              <Plus size={16}/> Nueva Idea
-            </button>
-          </div>
         </div>
       </main>
     </div>
@@ -128,11 +181,4 @@ function TabButton({ active, icon, label, onClick }) {
         </button>
     );
 }
-
-function IdeaBox({ text }) {
-    return (
-        <div className="bg-white/80 p-5 rounded-[28px] shadow-sm border border-white hover:rotate-1 transition-transform cursor-pointer">
-            <p className="text-xs font-bold text-blue-800 italic leading-relaxed">"{text}"</p>
-        </div>
-    );
-}
+

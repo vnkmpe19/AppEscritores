@@ -2,15 +2,57 @@
 import React, { useState } from 'react';
 import { Plus, X, List, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import { supabase } from '@/app/lib/supabase';
 export default function Bombilla() {
   const [showEditor, setShowEditor] = useState(false);
   const [notes, setNotes] = useState([]);
 
-  const handleSaveNote = (newNote) => {
-    setNotes([newNote, ...notes]);
-    setShowEditor(false);
-    console.log("Ocurrencia guardada:", newNote);
+  const handleSaveNote = async (newNote) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        alert("Debes iniciar sesión para conectar tus ideas.");
+        return;
+      }
+
+      // Obtener el último proyecto activo del usuario
+      const { data: proyectos } = await supabase
+        .from('proyectos')
+        .select('id')
+        .eq('id_usuario', user.id)
+        .order('fecha_actualizacion', { ascending: false })
+        .limit(1);
+
+      const id_proyecto = proyectos && proyectos.length > 0 ? proyectos[0].id : null;
+
+      if (!id_proyecto) {
+        alert("Necesitas un proyecto activo para guardar notas.");
+        return;
+      }
+
+      const payload = {
+        id_proyecto,
+        title: newNote.title || 'Idea rápida',
+        type: newNote.type || 'text',
+        content: newNote.content,
+        items: newNote.items && newNote.items.length > 0 ? newNote.items : null
+      };
+
+      const { data, error } = await supabase
+        .from('ocurrencias')
+        .insert([payload])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setNotes([data, ...notes]);
+      setShowEditor(false);
+      console.log("Ocurrencia guardada en BD:", data);
+    } catch (error) {
+      console.error("Error guardando ocurrencia:", error.message);
+      alert("Hubo un error al guardar la ocurrencia.");
+    }
   };
 
   return (
@@ -26,8 +68,8 @@ export default function Bombilla() {
           </motion.div>
         )}
       </AnimatePresence>
-      
-      <button 
+
+      <button
         onClick={() => setShowEditor(!showEditor)}
         className="bg-white p-4 rounded-full shadow-2xl border-2 border-[#E8F5A2] hover:scale-110 active:scale-95 transition-all group relative"
       >
@@ -43,15 +85,15 @@ export default function Bombilla() {
 function KeepEditor({ onSave, onClose }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [type, setType] = useState('text'); 
+  const [type, setType] = useState('text');
   const [listItems, setListItems] = useState([{ text: '', done: false }]);
   const [image, setImage] = useState(null);
   const wordCount = content.trim() === '' ? 0 : content.trim().split(/\s+/).length;
-  
+
   const handleSave = () => {
     onSave({ id: Date.now(), title: title || 'Sin título', content, type, items: listItems, image, color: 'bg-white' });
   };
-  
+
   return (
     <div className="bg-white w-[350px] md:w-[450px] rounded-[32px] shadow-2xl border border-slate-100 overflow-hidden flex flex-col">
       <div className="p-6 space-y-4">
@@ -71,7 +113,7 @@ function KeepEditor({ onSave, onClose }) {
       </div>
       <div className="bg-slate-50 px-6 py-4 flex justify-between items-center">
         <div className="flex gap-4 text-slate-400">
-           <span className="text-[10px] font-black uppercase tracking-widest">{wordCount}/400 PALABRAS</span>
+          <span className="text-[10px] font-black uppercase tracking-widest">{wordCount}/400 PALABRAS</span>
         </div>
         <div className="flex gap-2">
           <button onClick={onClose} className="text-xs font-black text-slate-400 px-3 py-1.5 hover:bg-slate-200 rounded-lg transition-all">Cerrar</button>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import {
   ReactFlow,
   Controls,
@@ -12,7 +12,6 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
-// Importamos tu nodo personalizado
 import OccurrenceNode from "./OccurrenceNode";
 
 const nodeTypes = {
@@ -58,7 +57,7 @@ export default function TableroCanvas({
   );
 
   return (
-    <div className="w-full h-full bg-white rounded-[40px] shadow-inner border border-slate-100 overflow-hidden relative">
+    <div className="w-full h-full bg-white rounded-[24px] md:rounded-[40px] shadow-inner border border-slate-100 overflow-hidden relative min-h-[400px]">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -68,19 +67,23 @@ export default function TableroCanvas({
         onNodeClick={(_, node) => onNodeClick(node)}
         nodeTypes={nodeTypes}
         fitView
-        // Estilos de la cuadrícula de fondo
+        panOnDrag={true}
+        zoomOnPinch={true}
         snapToGrid={true}
         snapGrid={[20, 20]}
+        fitViewOptions={{ padding: 0.2 }}
       >
         <Background variant="dots" gap={20} size={1} color="#F1C9C6" />
-        <Controls className="bg-white border-slate-100 shadow-lg rounded-xl overflow-hidden" />
-      </ReactFlow>
-      
-      {/* Indicador visual de modo edición */}
-      <div className="absolute top-6 left-6 pointer-events-none z-10">
-        <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-2xl border border-slate-100 shadow-sm">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-            Modo: Mapa Conceptual
+        
+        <Controls 
+          showInteractive={false} 
+          className="bg-white border-slate-100 shadow-xl rounded-2xl overflow-hidden m-2 md:m-4 scale-110 md:scale-100" 
+        />
+      </ReactFlow>      
+      <div className="absolute top-4 left-4 md:top-6 md:left-6 pointer-events-none z-10">
+        <div className="bg-white/90 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-xl md:rounded-2xl border border-slate-100 shadow-sm transition-all">
+          <p className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <span className="hidden sm:inline">Modo:</span> Mapa Conceptual
           </p>
         </div>
       </div>

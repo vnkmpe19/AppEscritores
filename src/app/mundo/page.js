@@ -199,12 +199,13 @@ export default function MundoPage() {
         viewMode="mundo" 
       />
 
-      <main className={`flex-1 transition-all duration-300 ${isSidebarExpanded ? 'ml-64' : 'ml-24'} p-4 md:p-8`}>
+      <main className={`flex-1 transition-all duration-300 ${isSidebarExpanded ? 'md:ml-64' : 'md:ml-24'} ml-0 p-4 md:p-8 flex flex-col h-screen overflow-y-auto`}>
         
         <Header 
           user={{name: currentUser.name}} 
           onSearch={handleSearch} 
-          showSearch={!selectedWorld} 
+          onMenuClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+          isSidebarExpanded={isSidebarExpanded}
           title="Mundo" 
         />
 

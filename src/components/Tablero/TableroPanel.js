@@ -71,15 +71,15 @@ export default function TableroPanel({
   onSugerirConexiones,
 }) {
   return (
-    <div className="w-72 bg-[#FEF9E7] rounded-[40px] p-6 flex flex-col gap-6 border border-amber-100 shadow-sm overflow-y-auto max-h-[calc(100vh-200px)]">
-      <h3 className="font-black text-lg text-orange-800 flex items-center gap-2">
+    <div className="w-full lg:w-72 bg-[#FEF9E7] rounded-[24px] lg:rounded-[40px] p-5 lg:p-6 flex flex-col gap-5 lg:gap-6 border border-amber-100 shadow-sm overflow-y-auto max-h-[60vh] lg:max-h-[calc(100vh-200px)] custom-scrollbar">
+      
+      <h3 className="font-black text-base lg:text-lg text-orange-800 flex items-center gap-2 sticky top-0 bg-[#FEF9E7] py-1 z-10">
         <Filter size={20} />
         Filtros y vista
       </h3>
 
-      {/* Tipo */}
       <div>
-        <p className="text-[10px] font-bold uppercase text-orange-500 tracking-wider mb-2">
+        <p className="text-[10px] font-black uppercase text-orange-500 tracking-widest mb-3">
           Tipo de nodo
         </p>
         <div className="flex flex-wrap gap-2">
@@ -89,10 +89,10 @@ export default function TableroPanel({
               <button
                 key={t.id ?? "all"}
                 onClick={() => setFiltroTipo(t.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-black transition-all active:scale-95 ${
                   filtroTipo === t.id
-                    ? "bg-[#FF5C5C] text-white shadow-md"
-                    : "bg-white text-slate-600 hover:bg-amber-50 border border-amber-100"
+                    ? "bg-[#FF5C5C] text-white shadow-md shadow-[#FF5C5C]/20"
+                    : "bg-white text-slate-600 border border-amber-100"
                 }`}
               >
                 <Icon size={14} />
@@ -103,41 +103,51 @@ export default function TableroPanel({
         </div>
       </div>
 
-      {/* Estado */}
-      <div>
-        <p className="text-[10px] font-bold uppercase text-orange-500 tracking-wider mb-2">
-          Estado
-        </p>
-        <select
-          value={filtroEstado || ""}
-          onChange={(e) => setFiltroEstado(e.target.value || null)}
-          className="w-full px-4 py-2.5 rounded-2xl border border-amber-100 bg-white text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-amber-200"
-        >
-          <option value="">Todos</option>
-          {ESTADOS.map((e) => (
-            <option key={e.id} value={e.id}>
-              {e.label}
-            </option>
-          ))}
-        </select>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 lg:gap-6">
+        <div>
+          <p className="text-[10px] font-black uppercase text-orange-500 tracking-widest mb-2">
+            Estado
+          </p>
+          <select
+            value={filtroEstado || ""}
+            onChange={(e) => setFiltroEstado(e.target.value || null)}
+            className="w-full px-4 py-3 rounded-2xl border border-amber-100 bg-white text-xs font-bold text-slate-700 outline-none"
+          >
+            <option value="">Todos</option>
+            {ESTADOS.map((e) => (
+              <option key={e.id} value={e.id}>{e.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <p className="text-[10px] font-black uppercase text-orange-500 tracking-widest mb-2 flex items-center gap-1">
+            <Layers size={12} />
+            Capa narrativa
+          </p>
+          <select
+            value={capaActiva || "todas"}
+            onChange={(e) => setCapaActiva(e.target.value)}
+            className="w-full px-4 py-3 rounded-2xl border border-amber-100 bg-white text-xs font-bold text-slate-700 outline-none"
+          >
+            {CAPAS.map((c) => (
+              <option key={c.id} value={c.id}>{c.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      {/* Emoción */}
       <div>
-        <p className="text-[10px] font-bold uppercase text-orange-500 tracking-wider mb-2">
+        <p className="text-[10px] font-black uppercase text-orange-500 tracking-widest mb-3">
           Emoción
         </p>
         <div className="flex flex-wrap gap-2">
           {EMOCIONES.map((e) => (
             <button
               key={e.id}
-              onClick={() =>
-                setFiltroEmocion(filtroEmocion === e.id ? null : e.id)
-              }
-              className={`px-3 py-1.5 rounded-2xl text-xs font-bold transition-all border-2 ${
-                filtroEmocion === e.id
-                  ? "border-slate-600"
-                  : "border-transparent hover:border-amber-200"
+              onClick={() => setFiltroEmocion(filtroEmocion === e.id ? null : e.id)}
+              className={`px-3 py-2 rounded-xl text-[10px] font-black transition-all border-2 active:scale-95 ${
+                filtroEmocion === e.id ? "border-slate-800" : "border-transparent"
               }`}
               style={{ backgroundColor: e.color }}
             >
@@ -147,125 +157,96 @@ export default function TableroPanel({
         </div>
       </div>
 
-      {/* Capas narrativas */}
-      <div>
-        <p className="text-[10px] font-bold uppercase text-orange-500 tracking-wider mb-2 flex items-center gap-1">
-          <Layers size={12} />
-          Capa narrativa
-        </p>
-        <select
-          value={capaActiva || "todas"}
-          onChange={(e) => setCapaActiva(e.target.value)}
-          className="w-full px-4 py-2.5 rounded-2xl border border-amber-100 bg-white text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-amber-200"
-        >
-          {CAPAS.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Estilo de conexiones */}
-      <div>
-        <p className="text-[10px] font-bold uppercase text-orange-500 tracking-wider mb-2 flex items-center gap-1">
+      <div className="bg-white/50 p-4 rounded-3xl border border-amber-100">
+        <p className="text-[10px] font-black uppercase text-orange-500 tracking-widest mb-3 flex items-center gap-1">
           <Link2 size={12} />
-          Estilo de línea
+          Conexiones
         </p>
-        <div className="flex gap-2">
+        <div className="flex gap-2 mb-3">
           {["continua", "punteada", "fragmentada"].map((s) => (
             <button
               key={s}
               onClick={() => setEdgeStyle(s)}
-              className={`flex-1 px-2 py-2 rounded-xl text-[10px] font-bold capitalize ${
-                edgeStyle === s
-                  ? "bg-[#7BA3C9] text-white"
-                  : "bg-white text-slate-600 border border-slate-200"
+              className={`flex-1 px-1 py-2 rounded-xl text-[9px] font-black uppercase tracking-tighter transition-all ${
+                edgeStyle === s ? "bg-[#7BA3C9] text-white" : "bg-white text-slate-400 border border-slate-100"
               }`}
             >
               {s}
             </button>
           ))}
         </div>
-        <div className="mt-2 flex items-center gap-2">
-          <Palette size={14} className="text-slate-500" />
-          <input
-            type="color"
-            value={edgeColor}
-            onChange={(e) => setEdgeColor(e.target.value)}
-            className="w-10 h-8 rounded-lg cursor-pointer border border-slate-200"
-          />
-          <span className="text-xs font-bold text-slate-600">{edgeColor}</span>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={edgeColor}
+              onChange={(e) => setEdgeColor(e.target.value)}
+              className="w-8 h-8 rounded-lg cursor-pointer border-none bg-transparent"
+            />
+            <span className="text-[10px] font-black text-slate-500 uppercase">{edgeColor}</span>
+          </div>
+          <Palette size={14} className="text-slate-400" />
         </div>
       </div>
 
-      {/* Modo emoción */}
-      <button
-        onClick={() => setModoEmocion(!modoEmocion)}
-        className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
-          modoEmocion
-            ? "bg-violet-100 text-violet-800 border-2 border-violet-200"
-            : "bg-white text-slate-600 border border-amber-100 hover:bg-amber-50"
-        }`}
-      >
-        {modoEmocion ? <Palette size={18} /> : <Eye size={18} />}
-        {modoEmocion ? "Modo emoción activo" : "Colorear por emoción"}
-      </button>
-
-      {/* Archivadas */}
-      <button
-        onClick={() => setMostrarArchivadas(!mostrarArchivadas)}
-        className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
-          mostrarArchivadas
-            ? "bg-slate-100 text-slate-600 border-2 border-slate-200"
-            : "bg-white text-slate-600 border border-amber-100 hover:bg-amber-50"
-        }`}
-      >
-        {mostrarArchivadas ? <Eye size={18} /> : <EyeOff size={18} />}
-        {mostrarArchivadas ? "Mostrando archivadas" : "Ocultar archivadas"}
-      </button>
-
-      {/* Sugerir conexiones */}
-      {onSugerirConexiones && (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
         <button
-          onClick={() => {
-            const n = onSugerirConexiones();
-            if (n > 0) alert(`Se crearon ${n} nueva(s) conexión(es) entre ideas con marcadores similares.`);
-            else alert("No hay nodos con marcadores comunes para conectar.");
-          }}
-          className="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors border border-rose-200"
+          onClick={() => setModoEmocion(!modoEmocion)}
+          className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-black text-xs transition-all active:scale-95 ${
+            modoEmocion ? "bg-violet-100 text-violet-800 border-2 border-violet-200" : "bg-white text-slate-600 border border-amber-100"
+          }`}
         >
-          <Link2 size={18} />
-          Sugerir conexiones
+          {modoEmocion ? <Palette size={18} /> : <Eye size={18} />}
+          {modoEmocion ? "MODO EMOCIÓN ACTIVO" : "COLOREAR POR EMOCIÓN"}
         </button>
-      )}
 
-      {/* Ver timeline */}
-      <button
-        onClick={onVerTimeline}
-        className="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm bg-[#BFD7ED] text-slate-800 hover:bg-[#9BC4E2] transition-colors border border-blue-200"
-      >
-        <Clock size={18} />
-        Ver en línea temporal
-      </button>
+        <button
+          onClick={() => setMostrarArchivadas(!mostrarArchivadas)}
+          className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-black text-xs transition-all active:scale-95 ${
+            mostrarArchivadas ? "bg-slate-200 text-slate-700 border-2 border-slate-300" : "bg-white text-slate-600 border border-amber-100"
+          }`}
+        >
+          {mostrarArchivadas ? <Eye size={18} /> : <EyeOff size={18} />}
+          {mostrarArchivadas ? "MOSTRANDO ARCHIVADAS" : "OCULTAR ARCHIVADAS"}
+        </button>
 
-      {/* Alertas */}
+        {onSugerirConexiones && (
+          <button
+            onClick={() => {
+              const n = onSugerirConexiones();
+              if (n > 0) alert(`Se crearon ${n} nueva(s) conexión(es).`);
+              else alert("No hay marcadores comunes para conectar.");
+            }}
+            className="flex items-center gap-3 px-4 py-3 rounded-2xl font-black text-xs bg-rose-50 text-rose-700 border border-rose-200 active:scale-95"
+          >
+            <Link2 size={18} />
+            SUGERIR CONEXIONES
+          </button>
+        )}
+
+        <button
+          onClick={onVerTimeline}
+          className="flex items-center gap-3 px-4 py-3 rounded-2xl font-black text-xs bg-[#BFD7ED] text-slate-800 border border-blue-200 active:scale-95"
+        >
+          <Clock size={18} />
+          VER LÍNEA TEMPORAL
+        </button>
+      </div>
+
       {(nodosAislados?.length > 0 || nodosSinImpacto?.length > 0) && (
-        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200">
-          <p className="text-xs font-black uppercase text-amber-800 mb-2 flex items-center gap-1">
-            <AlertCircle size={14} />
-            Alertas
+        <div className="p-4 rounded-[24px] bg-white border-2 border-orange-200 shadow-sm shadow-orange-100/50">
+          <p className="text-[10px] font-black uppercase text-orange-600 mb-2 flex items-center gap-2">
+            <AlertCircle size={16} />
+            Alertas de Narrativa
           </p>
-          {nodosAislados?.length > 0 && (
-            <p className="text-[11px] text-amber-800 mb-1">
-              {nodosAislados.length} ocurrencia(s) sin conexión
-            </p>
-          )}
-          {nodosSinImpacto?.length > 0 && (
-            <p className="text-[11px] text-amber-800">
-              {nodosSinImpacto.length} personaje(s) sin impacto en conflicto
-            </p>
-          )}
+          <div className="space-y-1">
+            {nodosAislados?.length > 0 && (
+              <p className="text-[10px] font-bold text-slate-500">• {nodosAislados.length} ideas sueltas</p>
+            )}
+            {nodosSinImpacto?.length > 0 && (
+              <p className="text-[10px] font-bold text-slate-500">• {nodosSinImpacto.length} personajes pasivos</p>
+            )}
+          </div>
         </div>
       )}
     </div>
