@@ -21,7 +21,6 @@ export default function ConfigModal({ isOpen, onClose, user, onUpdate }) {
       setAvatarPreview(user.avatar_url || '/avatar.png');
       setEmail(user.email || '');
     }
-    // Limpiar mensajes al abrir/cerrar
     setErrorMSG('');
     setSuccessMSG('');
     setNuevaPassword('');
@@ -58,9 +57,7 @@ export default function ConfigModal({ isOpen, onClose, user, onUpdate }) {
           .from('avatars')
           .upload(filePath, file, { upsert: true });
           
-        if (uploadError) {
-          throw new Error('No se pudo subir la imagen. Verifica que el bucket "avatars" exista en Supabase y sea público.');
-        }
+        if (uploadError) throw new Error('Error al subir imagen.');
         
         const { data: { publicUrl } } = supabase.storage
           .from('avatars')
@@ -78,95 +75,114 @@ export default function ConfigModal({ isOpen, onClose, user, onUpdate }) {
       }
       
       if (nuevaPassword) {
-        if (nuevaPassword.length < 6) {
-           throw new Error('La contraseña debe tener al menos 6 caracteres');
-        }
+        if (nuevaPassword.length < 6) throw new Error('Mínimo 6 caracteres');
         updates.password = nuevaPassword;
       }
 
       const { error: updateError } = await supabase.auth.updateUser(updates);
-      
-      if (updateError) {
-         if (updateError.message.includes('same as the old one')) {
-            throw new Error('La nueva contraseña no puede ser igual a la anterior');
-         }
-         throw updateError;
-      }
+      if (updateError) throw updateError;
       
       onUpdate({ ...user, nombre: nombre, avatar_url: finalAvatarUrl, email: email });
       
       if (requireReauthMsg) {
-         setSuccessMSG('¡Actualizado! Si cambiaste tu correo, revisa tu buzón para confirmarlo.');
-         setTimeout(() => { onClose(); }, 3000);
+        setSuccessMSG('¡Actualizado! Revisa tu nuevo correo para confirmar.');
+        setTimeout(() => { onClose(); }, 3000);
       } else {
-         onClose();
+        onClose();
       }
-      
-      
     } catch (err) {
-      console.error(err);
-      setErrorMSG(err.message || 'Error al guardar la configuración');
+      setErrorMSG(err.message || 'Error al guardar');
     } finally {
       setLoading(false);
     }
   };
 
-  if (!isOpen) return null;
-
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex justify-center items-center p-4">
-        <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }} className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative border border-slate-100">
-          <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-full p-2 transition-colors">
-            <X size={20} />
-          </button>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+          />
           
-          <div className="p-6 md:p-8">
-            <h2 className="text-2xl font-black text-slate-900 mb-6">Configurar Cuenta</h2>
-            
-            {errorMSG && <div className="mb-4 bg-red-50 text-red-600 p-3 rounded-xl text-sm font-bold border border-red-100">{errorMSG}</div>}
-            {successMSG && <div className="mb-4 bg-green-50 text-green-600 p-3 rounded-xl text-sm font-bold border border-green-100">{successMSG}</div>}
-            
-            <div className="flex flex-col items-center mb-8">
-              <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-                <div className="w-24 h-24 rounded-full border-4 border-[#BFD7ED] overflow-hidden bg-slate-100 shadow-inner group-hover:border-blue-400 transition-colors">
-                  <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
-                </div>
-                <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Camera size={24} className="text-white" />
-                </div>
-              </div>
-              <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
-              <button onClick={() => fileInputRef.current?.click()} className="mt-3 text-sm font-bold text-slate-500 hover:text-slate-800 flex items-center gap-2">
-                <Upload size={16} /> Cambiar foto
+          <motion.div 
+            initial={{ opacity: 0, y: 100, scale: 0.95 }} 
+            animate={{ opacity: 1, y: 0, scale: 1 }} 
+            exit={{ opacity: 0, y: 100, scale: 0.95 }}
+            className="bg-white rounded-t-[40px] sm:rounded-[40px] shadow-2xl w-full max-w-md max-h-[92vh] flex flex-col relative z-10 border border-slate-100 overflow-hidden"
+          >
+            <div className="p-6 md:p-8 border-b border-slate-50 flex items-center justify-between shrink-0">
+              <h2 className="text-xl md:text-2xl font-black text-slate-900">Configuración</h2>
+              <button 
+                onClick={onClose} 
+                className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full transition-all active:scale-90"
+              >
+                <X size={20} />
               </button>
             </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1 ml-1">Nombre de usuario</label>
-                <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none transition-all font-medium text-slate-800" placeholder="Tu nombre" />
+
+            <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar space-y-6">
+              
+              {errorMSG && <div className="bg-red-50 text-red-600 p-4 rounded-2xl text-xs font-bold border border-red-100">{errorMSG}</div>}
+              {successMSG && <div className="bg-green-50 text-green-600 p-4 rounded-2xl text-xs font-bold border border-green-100">{successMSG}</div>}
+              
+              <div className="flex flex-col items-center">
+                <div 
+                  className="relative group cursor-pointer" 
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <div className="w-24 h-24 md:w-28 md:h-28 rounded-full border-4 border-[#BFD7ED] overflow-hidden bg-slate-50 shadow-inner group-hover:border-[#FFB7C5] transition-all">
+                    <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="absolute inset-0 bg-black/30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Camera size={24} className="text-white" />
+                  </div>
+                </div>
+                <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
+                <button 
+                  onClick={() => fileInputRef.current?.click()} 
+                  className="mt-3 text-[10px] md:text-xs font-black uppercase tracking-widest text-[#F497A9] hover:text-red-400 transition-colors"
+                >
+                  Cambiar imagen de perfil
+                </button>
               </div>
               
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1 ml-1">Correo electrónico</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none transition-all font-medium text-slate-800" placeholder="tu@correo.com" />
-                <p className="text-[10px] text-slate-400 ml-1 mt-1 font-bold">Si cambias el correo, tendrás que verificarlo.</p>
-              </div>
+              <div className="space-y-4 md:space-y-5">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] md:text-xs font-black uppercase text-slate-400 tracking-widest ml-1">Nombre de usuario</label>
+                  <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-transparent focus:bg-white focus:border-[#BFD7ED] focus:ring-4 focus:ring-[#BFD7ED]/10 outline-none transition-all font-bold text-slate-700" placeholder="Ej: Kei" />
+                </div>
+                
+                <div className="space-y-1.5">
+                  <label className="text-[10px] md:text-xs font-black uppercase text-slate-400 tracking-widest ml-1">Correo electrónico</label>
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-transparent focus:bg-white focus:border-[#BFD7ED] focus:ring-4 focus:ring-[#BFD7ED]/10 outline-none transition-all font-bold text-slate-700" placeholder="tu@correo.com" />
+                </div>
 
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1 ml-1">Nueva Contraseña</label>
-                <input type="password" value={nuevaPassword} onChange={(e) => setNuevaPassword(e.target.value)} className="w-full px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-100 outline-none transition-all font-medium text-slate-800" placeholder="Añade una nueva contraseña (opcional)" />
-                <p className="text-[10px] text-slate-400 ml-1 mt-1 font-bold">Déjalo en blanco si no quieres cambiarla.</p>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] md:text-xs font-black uppercase text-slate-400 tracking-widest ml-1">Nueva Contraseña</label>
+                  <input type="password" value={nuevaPassword} onChange={(e) => setNuevaPassword(e.target.value)} className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-transparent focus:bg-white focus:border-[#BFD7ED] focus:ring-4 focus:ring-[#BFD7ED]/10 outline-none transition-all font-bold text-slate-700" placeholder="••••••••" />
+                  <p className="text-[9px] text-slate-300 ml-1 font-bold italic">Déjala en blanco si no quieres cambiarla.</p>
+                </div>
               </div>
             </div>
-            
-            <button onClick={saveSettings} disabled={loading} className="mt-8 w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-3.5 rounded-2xl shadow-lg hover:shadow-xl transition-all flex justify-center items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
-              {loading ? <Loader2 size={18} className="animate-spin" /> : <><Save size={18} /> Guardar Cambios</>}
-            </button>
-          </div>
-        </motion.div>
-      </div>
+
+            <div className="p-6 md:p-8 border-t border-slate-50 bg-white shrink-0">
+              <button 
+                onClick={saveSettings} 
+                disabled={loading} 
+                className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all flex justify-center items-center gap-3 disabled:opacity-50 uppercase text-xs tracking-widest"
+              >
+                {loading ? <Loader2 size={18} className="animate-spin" /> : <><Save size={18} /> Guardar Cambios</>}
+              </button>
+            </div>
+
+          </motion.div>
+        </div>
+      )}
     </AnimatePresence>
   );
 }
