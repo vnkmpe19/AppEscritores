@@ -23,6 +23,8 @@ export default function TableroCanvas({
   setNodes,
   edges,
   setEdges,
+  onNodesDelete,
+  onEdgesDelete,
   edgeStyle,
   edgeColor,
   onNodeClick,
@@ -63,6 +65,8 @@ export default function TableroCanvas({
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onNodesDelete={onNodesDelete}
+        onEdgesDelete={onEdgesDelete}
         onConnect={onConnect}
         onNodeClick={(_, node) => onNodeClick(node)}
         nodeTypes={nodeTypes}

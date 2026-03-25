@@ -250,6 +250,30 @@ function TableroPageInner() {
     onChangeLcd();
   }, []);
 
+  const handleNodesDelete = useCallback(async (nodesToDelete) => {
+    if (!currentProyectoId) return;
+    const ids = nodesToDelete.map(n => n.id);
+    try {
+      await supabase.from('ideas').delete().in('id', ids);
+      setSyncStatus('synced');
+    } catch (err) {
+      console.error("Error deleting nodes:", err);
+      setSyncStatus('error');
+    }
+  }, [currentProyectoId]);
+
+  const handleEdgesDelete = useCallback(async (edgesToDelete) => {
+    if (!currentProyectoId) return;
+    const ids = edgesToDelete.map(e => e.id);
+    try {
+      await supabase.from('conexiones_ideas').delete().in('id', ids);
+      setSyncStatus('synced');
+    } catch (err) {
+      console.error("Error deleting edges:", err);
+      setSyncStatus('error');
+    }
+  }, [currentProyectoId]);
+
   const sugerirConexiones = useCallback(() => {
     const conMarcadores = nodes.filter(
       (n) => n.data?.marcadores?.length > 0 && !n.data?.archivada
@@ -387,7 +411,9 @@ function TableroPageInner() {
                          setEdges={(fn) => { setEdges(fn); onChangeLcd(); }}
                          edgeStyle={edgeStyle}
                          edgeColor={edgeColor}
-                         onNodeClick={(n) => setNodoSeleccionado(n)}
+                         onNodesDelete={handleNodesDelete}
+                          onEdgesDelete={handleEdgesDelete}
+                          onNodeClick={(n) => setNodoSeleccionado(n)}
                        />
                      </div>
 

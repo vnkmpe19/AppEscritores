@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { supabase } from '../lib/supabase'; // Asegúrate de la ruta correcta
+import { supabase } from '../lib/supabase';
 import {
   ChevronLeft, Trash2, Edit, Plus, LayoutGrid,
   Map, Users, BookOpen as BookIcon, Languages, Network, X, Globe
@@ -14,7 +14,7 @@ import Header from '@/components/common/Header';
 import Bombilla from '@/components/common/Bombilla';
 import Libreta from '@/components/proyectos/Libreta';
 
-// Tus módulos
+
 import DashboardModule from '@/components/mundo/dashboard/DashboardModule';
 import GeografiaModule from '@/components/mundo/geografia/GeografiaModule';
 import SociopoliticalModule from '@/components/mundo/sociopolitica/SociopoliticalModule';
@@ -48,7 +48,7 @@ export default function MundoPage() {
   const [formImage, setFormImage] = useState('');
   const [terminoBusqueda, setTerminoBusqueda] = useState('');
 
-  // Usuario real
+
   const [currentUser, setCurrentUser] = useState({ id: null, name: 'Cargando...' });
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export default function MundoPage() {
   }, []);
 
   const cargarDatos = async () => {
-    // 1. Obtener usuario actual
+
     const { data: authData } = await supabase.auth.getUser();
     if (!authData.user) return;
 
