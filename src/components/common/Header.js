@@ -70,7 +70,7 @@ export default function Header({ user, onLogout, onSearch, onMenuClick, isSideba
           <Menu size={24} />
         </button>
         <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">{title}</h1>
-        <div className="w-10 md:hidden" /> {/* Espaciador para centrar título en móvil si es necesario */}
+        <div className="w-10 md:hidden" />
       </div>
       
       <div className="flex items-center gap-4 md:gap-6">

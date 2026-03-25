@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link'; 
+import Link from 'next/link';
 import { supabase } from '../lib/supabase'; // Asegúrate de la ruta correcta
-import { 
-  ChevronLeft, Trash2, Edit, Plus, LayoutGrid, 
+import {
+  ChevronLeft, Trash2, Edit, Plus, LayoutGrid,
   Map, Users, BookOpen as BookIcon, Languages, Network, X, Globe
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -26,7 +26,7 @@ const COLORS = ['bg-[#BFD7ED]', 'bg-[#FFB7C5]', 'bg-[#E8F5A2]', 'bg-[#FFD1A4]', 
 
 const WORLD_MODULES = [
   { id: 'dashboard', label: 'Panel de Control', icon: <LayoutGrid size={18} />, href: null },
-  { id: 'geografia', label: 'Geografía y Clima', icon: <Map size={18} />, href: null }, 
+  { id: 'geografia', label: 'Geografía y Clima', icon: <Map size={18} />, href: null },
   { id: 'sociedad', label: 'Estructura Sociopolítica', icon: <Users size={18} />, href: null },
   { id: 'historia', label: 'Historia y Eras', icon: <BookIcon size={18} />, href: null },
   { id: 'culturas', label: 'Cultura', icon: <Languages size={18} />, href: null },
@@ -35,17 +35,17 @@ const WORLD_MODULES = [
 
 export default function MundoPage() {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
-  const [worlds, setWorlds] = useState([]); 
-  const [viewMode, setViewMode] = useState('grid'); 
+  const [worlds, setWorlds] = useState([]);
+  const [viewMode, setViewMode] = useState('grid');
   const [selectedWorld, setSelectedWorld] = useState(null);
   const [activeModule, setActiveModule] = useState('dashboard');
-  
+
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingWorld, setEditingWorld] = useState(null);
   const [formTitle, setFormTitle] = useState('');
   const [formDesc, setFormDesc] = useState('');
   const [formColor, setFormColor] = useState(COLORS[0]);
-  const [formImage, setFormImage] = useState(''); 
+  const [formImage, setFormImage] = useState('');
   const [terminoBusqueda, setTerminoBusqueda] = useState('');
 
   // Usuario real
@@ -88,7 +88,7 @@ export default function MundoPage() {
       const urlParams = new URLSearchParams(window.location.search);
       const urlId = urlParams.get('proyecto_id');
       const localId = localStorage.getItem('mundoActivoId');
-      
+
       const mundoIdBuscar = urlId || localId;
 
       if (mundoIdBuscar) {
@@ -102,23 +102,23 @@ export default function MundoPage() {
     }
   };
 
-  const mundosFiltrados = worlds.filter(mundo => 
+  const mundosFiltrados = worlds.filter(mundo =>
     mundo.title.toLowerCase().includes(terminoBusqueda.toLowerCase()) ||
     (mundo.description && mundo.description.toLowerCase().includes(terminoBusqueda.toLowerCase()))
   );
 
   const handleSearch = (termino) => setTerminoBusqueda(termino);
-  
-  const handleOpenDetail = (world) => { 
-    setSelectedWorld(world); 
-    setViewMode('detail'); 
-    setActiveModule('dashboard'); 
+
+  const handleOpenDetail = (world) => {
+    setSelectedWorld(world);
+    setViewMode('detail');
+    setActiveModule('dashboard');
     localStorage.setItem('mundoActivoId', world.id);
   };
-  
-  const handleCloseDetail = () => { 
-    setSelectedWorld(null); 
-    setViewMode('grid'); 
+
+  const handleCloseDetail = () => {
+    setSelectedWorld(null);
+    setViewMode('grid');
     localStorage.removeItem('mundoActivoId');
 
     window.history.replaceState(null, '', '/mundo');
@@ -138,16 +138,16 @@ export default function MundoPage() {
       .single();
 
     if (!error && data) {
-      const newWorld = { 
-        id: data.id, 
-        title: data.titulo, 
-        description: data.descripcion, 
-        coverColor: data.color, 
-        image: data.portada, 
-        author: currentUser.name 
+      const newWorld = {
+        id: data.id,
+        title: data.titulo,
+        description: data.descripcion,
+        coverColor: data.color,
+        image: data.portada,
+        author: currentUser.name
       };
       setWorlds([newWorld, ...worlds]);
-      setShowCreateModal(false); 
+      setShowCreateModal(false);
       resetForm();
     }
   };
@@ -165,7 +165,7 @@ export default function MundoPage() {
 
     if (!error) {
       setWorlds(worlds.map(w => w.id === editingWorld.id ? { ...w, title: formTitle, description: formDesc, coverColor: formColor, image: formImage || null } : w));
-      setEditingWorld(null); 
+      setEditingWorld(null);
       setShowCreateModal(false);
       resetForm();
     }
@@ -180,38 +180,38 @@ export default function MundoPage() {
   };
 
   const resetForm = () => { setFormTitle(''); setFormDesc(''); setFormColor(COLORS[0]); setFormImage(''); };
-  
-  const openEditModal = (world) => { 
-    setEditingWorld(world); 
-    setFormTitle(world.title); 
-    setFormDesc(world.description || ''); 
-    setFormColor(world.coverColor); 
-    setFormImage(world.image || ''); 
-    setShowCreateModal(true); 
+
+  const openEditModal = (world) => {
+    setEditingWorld(world);
+    setFormTitle(world.title);
+    setFormDesc(world.description || '');
+    setFormColor(world.coverColor);
+    setFormImage(world.image || '');
+    setShowCreateModal(true);
   };
 
   return (
     <div className="flex min-h-screen bg-[#FFF5F5] font-sans text-slate-800 overflow-x-hidden">
-      
-      <Sidebar 
-        isExpanded={isSidebarExpanded} 
-        setIsExpanded={setIsSidebarExpanded} 
-        viewMode="mundo" 
+
+      <Sidebar
+        isExpanded={isSidebarExpanded}
+        setIsExpanded={setIsSidebarExpanded}
+        viewMode="mundo"
       />
 
       <main className={`flex-1 transition-all duration-300 ${isSidebarExpanded ? 'md:ml-64' : 'md:ml-24'} ml-0 p-4 md:p-8 flex flex-col h-screen overflow-y-auto`}>
-        
-        <Header 
-          user={{name: currentUser.name}} 
-          onSearch={handleSearch} 
+
+        <Header
+          user={{ name: currentUser.name }}
+          onSearch={handleSearch}
           onMenuClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
           isSidebarExpanded={isSidebarExpanded}
-          title="Mundo" 
+          title="Mundo"
         />
 
         <div className="max-w-[1400px] mx-auto relative min-h-[500px]">
           <AnimatePresence mode="wait">
-            
+
             {!selectedWorld && (
               <motion.div key="grid-mundos" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
                 <div className="flex justify-between items-center mb-8">
@@ -220,7 +220,7 @@ export default function MundoPage() {
                     <Plus size={20} /><span>Crear Mundo</span>
                   </button>
                 </div>
-                
+
                 {mundosFiltrados.length === 0 ? (
                   <div className="text-center py-20 text-slate-400">
                     <Globe size={48} className="mx-auto mb-4 opacity-50" />
@@ -236,8 +236,8 @@ export default function MundoPage() {
                         <div className="text-center">
                           <h3 className="font-bold text-slate-800">{mundo.title}</h3>
                           <div className="flex gap-2 mt-2 justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => openEditModal(mundo)} className="p-1.5 text-slate-400 hover:text-blue-500 bg-white rounded-full shadow-sm"><Edit size={16}/></button>
-                            <button onClick={() => handleDelete(mundo.id)} className="p-1.5 text-slate-400 hover:text-red-500 bg-white rounded-full shadow-sm"><Trash2 size={16}/></button>
+                            <button onClick={() => openEditModal(mundo)} className="p-1.5 text-slate-400 hover:text-blue-500 bg-white rounded-full shadow-sm"><Edit size={16} /></button>
+                            <button onClick={() => handleDelete(mundo.id)} className="p-1.5 text-slate-400 hover:text-red-500 bg-white rounded-full shadow-sm"><Trash2 size={16} /></button>
                           </div>
                         </div>
                       </div>
@@ -249,12 +249,12 @@ export default function MundoPage() {
 
             {selectedWorld && (
               <motion.div key="detalle-mundo" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex flex-col lg:flex-row gap-8">
-                
+
                 <div className="w-full lg:w-64 flex-shrink-0 space-y-6">
                   <button onClick={handleCloseDetail} className="flex items-center gap-2 text-slate-500 hover:text-[#FF5C5C] font-bold mb-6 transition-colors">
                     <ChevronLeft size={20} /> Volver a Mundos
                   </button>
-                  
+
                   <div className="bg-white rounded-[32px] p-4 shadow-sm border border-slate-100">
                     <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest px-4 mb-3">Módulos del Mundo</h3>
                     <div className="flex flex-col gap-1">
@@ -310,7 +310,7 @@ export default function MundoPage() {
                   <h3 className="text-2xl font-black text-slate-800">{editingWorld ? 'Editar Mundo' : 'Nuevo Mundo'}</h3>
                   <button onClick={() => { setShowCreateModal(false); setEditingWorld(null); resetForm(); }} className="text-slate-400 hover:bg-slate-50 p-2 rounded-full"><X size={20} /></button>
                 </div>
-                
+
                 <div className="space-y-6">
                   <div>
                     <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Nombre del Mundo</label>
