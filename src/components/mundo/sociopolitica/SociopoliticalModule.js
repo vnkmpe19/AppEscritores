@@ -218,11 +218,16 @@ export default function SociopoliticalModule({ proyectoId }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 sm:space-y-12 pb-20 px-2 sm:px-0">
       
-      <div className="bg-white p-6 sm:p-10 rounded-[30px] sm:rounded-[40px] border border-slate-100 shadow-xl relative overflow-hidden group">
-        <div className="absolute -top-10 -right-10 w-32 h-32 sm:w-40 sm:h-40 bg-[#FF5C5C]/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10">
-          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 mb-2 sm:mb-4">Configuración del mundo</h2>
-          <p className="text-slate-400 text-sm sm:text-lg max-w-3xl leading-relaxed">Define el marco legal, social y económico que rige a tu civilización. Elige cómo se distribuye el poder y quiénes sostienen la corona.</p>
+      <div className="bg-white p-6 md:p-10 rounded-[30px] md:rounded-[40px] border border-slate-100 shadow-xl relative overflow-hidden group">
+        <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#FF5C5C]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-5 relative z-10">
+          <div className="p-3 md:p-4 bg-[#FFB7C5]/50 text-slate-800 rounded-2xl shadow-inner">
+            <Users size={32} className="w-8 h-8 md:w-auto md:h-auto" />
+          </div>
+          <div>
+            <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">Estructura Sociopolítica</h2>
+            <p className="text-slate-400 text-sm md:text-lg mt-1 max-w-2xl leading-relaxed">Define el marco legal, social y económico que rige a tu civilización. Elige cómo se distribuye el poder y quiénes sostienen la corona.</p>
+          </div>
         </div>
       </div>
 
@@ -478,7 +483,8 @@ function TarjetaGobierno({ titulo, descripcion, icono, activo, alHacerClic, alEd
 function NodoJerarquia({ nodo, alAgregar, alEditar, alEliminar, esRaiz = false }) {
   return (
     <div className="flex flex-col items-center relative">
-      <motion.div className={`w-36 sm:w-48 md:w-64 p-3 sm:p-5 md:p-6 rounded-[20px] md:rounded-[24px] border-2 flex flex-col items-center text-center relative z-10 transition-all group hover:scale-105 cursor-default ${esRaiz ? 'bg-[#D4C1EC] border-[#D4C1EC] text-slate-900 shadow-[0_10px_30px_rgba(212,193,236,0.5)]' : 'bg-white border-slate-100 text-slate-800 shadow-sm hover:shadow-md'}`}>
+      <motion.div className={`w-32 sm:w-44 md:w-56 p-3 sm:p-5 md:p-6 rounded-[20px] md:rounded-[24px] border-2 flex flex-col items-center text-center relative z-10 transition-all group hover:scale-105 cursor-default ${esRaiz ? 'bg-[#D4C1EC] border-[#D4C1EC] text-slate-900 shadow-[0_10px_30px_rgba(212,193,236,0.5)]' : 'bg-white border-slate-100 text-slate-800 shadow-sm hover:shadow-md'}`}>
+
         
         <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 md:top-3 md:right-3 flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
           <button onClick={() => alEditar(nodo)} className={`p-1.5 sm:p-2 rounded-full shadow-sm hover:scale-110 ${esRaiz ? 'bg-white/30 text-white' : 'bg-slate-50 text-blue-500'}`}><Edit size={12} className="sm:w-3.5 sm:h-3.5"/></button>
