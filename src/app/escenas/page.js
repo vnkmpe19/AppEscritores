@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = 'force-dynamic';
 import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import { supabase } from '../lib/supabase'; // Ajusta la ruta si es diferente
 import { ReactFlow, Background, Controls } from '@xyflow/react';

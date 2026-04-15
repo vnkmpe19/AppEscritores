@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = 'force-dynamic';
 
 import React, { useState, useCallback, useEffect, Suspense } from "react";
 import { MarkerType } from "@xyflow/react";
