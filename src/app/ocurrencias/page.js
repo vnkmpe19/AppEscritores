@@ -1,6 +1,6 @@
 "use client";
 export const dynamic = 'force-dynamic';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -14,7 +14,7 @@ import NoteCard from '@/components/ocurrencias/NoteCard';
 import NoteEditor from '@/components/ocurrencias/NoteEditor';
 import Link from 'next/link';
 
-export default function OcurrenciasPage() {
+function OcurrenciasPageInner() {
   const searchParams = useSearchParams();
   const initialProjectId = searchParams.get('proyecto_id');
 
@@ -288,5 +288,13 @@ export default function OcurrenciasPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function OcurrenciasPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen font-bold text-slate-400 bg-[#FFF5F5]">Cargando ocurrencias...</div>}>
+      <OcurrenciasPageInner />
+    </Suspense>
   );
 }
