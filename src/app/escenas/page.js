@@ -18,6 +18,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { useSearchParams } from 'next/navigation';
 import { Plus, LayoutGrid, MousePointer2, ChevronLeft } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import Link from 'next/link';
 
 const COLORS = ['bg-[#BFD7ED]', 'bg-[#FFB7C5]', 'bg-[#E8F5A2]', 'bg-[#FFD1A4]', 'bg-[#D4C1EC]'];
 const nodeTypes = { scene: SceneCard };
@@ -186,12 +187,12 @@ function EscenasPageInner() {
           >
             {/* Botón de regreso tipo "Mundo" */}
             <div className="mb-4">
-              <button 
-                onClick={() => setSelectedProject(null)} 
+              <Link 
+                href="/proyectos"
                 className="flex items-center gap-2 text-slate-500 hover:text-[#FF5C5C] transition-colors font-bold text-sm"
               >
-                <ChevronLeft size={20} /> Volver a Escenas
-              </button>
+                <ChevronLeft size={20} /> Volver a Proyectos
+              </Link>
             </div>
 
             {/* Cabecera del lienzo */}

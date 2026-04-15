@@ -159,9 +159,9 @@ export default function CharacterModule() {
               className="flex flex-col h-full">
               
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-6 md:px-10 pt-6 gap-4">
-                <button onClick={() => setSelectedProjectId(null)} className="flex items-center gap-2 text-slate-400 hover:text-[#FF5C5C] font-bold text-[10px] md:text-xs uppercase tracking-widest transition-colors">
+                <Link href="/proyectos" className="flex items-center gap-2 text-slate-400 hover:text-[#FF5C5C] font-bold text-[10px] md:text-xs uppercase tracking-widest transition-colors">
                   <ArrowLeft size={16} /> Cambiar Proyecto
-                </button>
+                </Link>
                 <div className="bg-white/60 backdrop-blur-sm border border-white/50 px-5 py-2 rounded-full shadow-sm w-full md:w-auto">
                    <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-slate-400">Personajes de:</p>
                    <p className="text-xs md:text-sm font-serif font-black text-slate-900 truncate">{selectedProjectName}</p>

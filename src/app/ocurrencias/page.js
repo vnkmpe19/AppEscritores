@@ -11,6 +11,7 @@ import Sidebar from '@/components/common/Sidebar';
 import Header from '@/components/common/Header';
 import NoteCard from '@/components/ocurrencias/NoteCard';
 import NoteEditor from '@/components/ocurrencias/NoteEditor';
+import Link from 'next/link';
 
 export default function OcurrenciasPage() {
   const searchParams = useSearchParams();
@@ -216,9 +217,9 @@ export default function OcurrenciasPage() {
           ) : (
             <div className="flex flex-col gap-6">
               <div className="flex justify-between items-center mb-4">
-                <button onClick={() => { setProyectoId(null); setSelectedProject(null); }} className="flex items-center gap-2 text-slate-400 hover:text-[#FF5C5C] font-bold text-xs uppercase tracking-widest transition-colors">
+                <Link href="/proyectos" className="flex items-center gap-2 text-slate-400 hover:text-[#FF5C5C] font-bold text-xs uppercase tracking-widest transition-colors">
                   <ArrowLeft size={16} /> Cambiar Proyecto
-                </button>
+                </Link>
                 <div className="bg-white/60 backdrop-blur-sm border border-white/50 px-6 py-2 rounded-full shadow-sm">
                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Proyecto:</p>
                    <p className="text-sm font-serif font-black text-slate-900">{selectedProject?.titulo}</p>

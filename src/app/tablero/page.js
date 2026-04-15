@@ -14,6 +14,7 @@ import { supabase } from "@/app/lib/supabase";
 import { Loader2, Cloud, CloudOff, FolderOpen, ArrowLeft, Filter, Zap, X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from 'next/link';
 
 function generateUUID() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -381,9 +382,9 @@ function TableroPageInner() {
           ) : (
             <div className="flex flex-1 flex-col gap-4 overflow-hidden">
                <div className="flex justify-between items-center bg-white/40 backdrop-blur-sm p-4 rounded-[30px] border border-white/50">
-                  <button onClick={() => { setCurrentProyectoId(null); setSelectedProject(null); setNodes([]); setEdges([]); }} className="flex items-center gap-2 text-slate-400 hover:text-[#FF5C5C] font-bold text-xs uppercase tracking-widest transition-colors">
+                  <Link href="/proyectos" className="flex items-center gap-2 text-slate-400 hover:text-[#FF5C5C] font-bold text-xs uppercase tracking-widest transition-colors">
                     <ArrowLeft size={16} /> Cambiar Proyecto
-                  </button>
+                  </Link>
                   <div className="flex flex-col items-end">
                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tablero de:</p>
                      <p className="text-sm font-serif font-black text-slate-900">{selectedProject?.titulo}</p>

@@ -17,9 +17,28 @@ export default function RegistroPage() {
   const [cargando, setCargando] = useState(false);
   const [mensajeExito, setMensajeExito] = useState(null);
 
+  const [pwStrength, setPwStrength] = useState({ score: 0, length: false, upper: false, lower: false, num: false, special: false });
+
+  const evaluatePassword = (pass) => {
+    const length = pass.length >= 8;
+    const upper = /[A-Z]/.test(pass);
+    const lower = /[a-z]/.test(pass);
+    const num = /[0-9]/.test(pass);
+    const special = /[^A-Za-z0-9]/.test(pass);
+    const score = [length, upper, lower, num, special].filter(Boolean).length;
+    
+    setPwStrength({ score, length, upper, lower, num, special });
+    setPassword(pass);
+  };
+
   const handleRegistro = async (e) => {
     e.preventDefault();
     
+    if (pwStrength.score < 5) {
+      setError("La contraseña no cumple con los requisitos mínimos de seguridad.");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError("Las contraseñas no coinciden.");
       return;
@@ -92,6 +111,19 @@ export default function RegistroPage() {
     }
   };
 
+  const getStrengthBarColor = () => {
+    if (pwStrength.score <= 2) return "bg-red-500 w-1/3";
+    if (pwStrength.score <= 4) return "bg-yellow-500 w-2/3";
+    return "bg-green-500 w-full";
+  };
+
+  const getStrengthLabel = () => {
+    if (password.length === 0) return "";
+    if (pwStrength.score <= 2) return "Débil";
+    if (pwStrength.score <= 4) return "Aceptable";
+    return "Fuerte";
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen w-full bg-[#BDD8E9] p-4 relative">
       <div className="bg-white w-full max-w-lg p-10 md:p-14 rounded-[50px] shadow-2xl flex flex-col z-10">
@@ -111,7 +143,7 @@ export default function RegistroPage() {
               required
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="w-full p-4 rounded-full bg-[#F8E4E4] outline-none border-none shadow-sm text-gray-800" 
+              className="w-full p-4 rounded-full bg-[#F8E4E4] outline-none border-none shadow-sm text-gray-800 focus:ring-2 focus:ring-[#E3485D]/30 transition-all text-sm" 
             />
           </div>
 
@@ -122,20 +154,37 @@ export default function RegistroPage() {
               required
               value={nombreUsuario}
               onChange={e => setNombreUsuario(e.target.value)}
-              className="w-full p-4 rounded-full bg-[#F8E4E4] outline-none border-none shadow-sm text-gray-800" 
+              className="w-full p-4 rounded-full bg-[#F8E4E4] outline-none border-none shadow-sm text-gray-800 focus:ring-2 focus:ring-[#E3485D]/30 transition-all text-sm" 
             />
           </div>
 
           <div>
-            <label className="block font-bold text-gray-900 mb-2 ml-4 font-serif text-lg">Contraseña</label>
+            <label className="block font-bold text-gray-900 mb-2 ml-4 font-serif text-lg flex items-center justify-between">
+              Contraseña
+              <span className="text-xs font-sans font-bold text-slate-400">{getStrengthLabel()}</span>
+            </label>
             <input 
               type="password" 
               required
-              minLength={6}
               value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full p-4 rounded-full bg-[#F8E4E4] outline-none border-none shadow-sm text-gray-800" 
+              onChange={e => evaluatePassword(e.target.value)}
+              className="w-full p-4 rounded-full bg-[#F8E4E4] outline-none border-none shadow-sm text-gray-800 focus:ring-2 focus:ring-[#E3485D]/30 transition-all text-sm" 
             />
+            
+            {password.length > 0 && (
+              <div className="mt-3 ml-2 mr-2">
+                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div className={`h-full transition-all duration-300 ${getStrengthBarColor()}`} />
+                </div>
+                <div className="grid grid-cols-2 gap-2 mt-3 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                  <span className={pwStrength.length ? 'text-green-600' : ''}>✓ 8 caracteres mín.</span>
+                  <span className={pwStrength.upper ? 'text-green-600' : ''}>✓ Mayúscula</span>
+                  <span className={pwStrength.lower ? 'text-green-600' : ''}>✓ Minúscula</span>
+                  <span className={pwStrength.num ? 'text-green-600' : ''}>✓ Número</span>
+                  <span className={pwStrength.special ? 'text-green-600' : ''}>✓ Carácter especial</span>
+                </div>
+              </div>
+            )}
           </div>
 
           <div>
@@ -143,10 +192,9 @@ export default function RegistroPage() {
             <input 
               type="password"
               required 
-              minLength={6}
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
-              className="w-full p-4 rounded-full bg-[#F8E4E4] outline-none border-none shadow-sm text-gray-800" 
+              className="w-full p-4 rounded-full bg-[#F8E4E4] outline-none border-none shadow-sm text-gray-800 focus:ring-2 focus:ring-[#E3485D]/30 transition-all text-sm" 
             />
           </div>
 

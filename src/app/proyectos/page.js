@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '../lib/supabase'; // Asegúrate de tu ruta
 import { 
-  ChevronRight, Trash2, Edit, Plus, X, LayoutGrid, BookOpen, Image as ImageIcon, ChevronLeft, Search
+  ChevronRight, Trash2, Edit, Plus, X, LayoutGrid, BookOpen, Image as ImageIcon, ChevronLeft, Search, User, Edit3, Globe, Lightbulb
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -18,11 +18,11 @@ const COLORS = [
 ];
 
 const PROJECT_SECTIONS = [
-  { id: 'personajes', label: 'Personajes', href: '/personajes' },
-  { id: 'escenas', label: 'Escenas', href: '/escenas' },
-  { id: 'Mundo', label: 'Mundo', href: '/mundo' },
-  { id: 'ocurrencias', label: 'Ocurrencias', href: '/ocurrencias' },
-  { id: 'tablero', label: 'Tablero', href: '/tablero' } // <-- Botón nuevo agregado
+  { id: 'personajes', label: 'Personajes', href: '/personajes', icon: <User size={20} /> },
+  { id: 'escenas', label: 'Escenas', href: '/escenas', icon: <Edit3 size={20} /> },
+  { id: 'Mundo', label: 'Mundo', href: '/mundo', icon: <Globe size={20} /> },
+  { id: 'ocurrencias', label: 'Ocurrencias', href: '/ocurrencias', icon: <Lightbulb size={20} /> },
+  { id: 'tablero', label: 'Tablero', href: '/tablero', icon: <LayoutGrid size={20} /> }
 ];
 
 export default function ProyectosPage() {
@@ -270,8 +270,10 @@ export default function ProyectosPage() {
                         className="group flex items-center justify-between p-5 rounded-2xl cursor-pointer transition-all bg-slate-50 hover:bg-[#BFD7ED]/60 text-slate-500 hover:text-slate-900"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="w-2.5 h-2.5 rounded-full transition-colors bg-slate-300 group-hover:bg-[#FF5C5C]" />
-                          <span className="font-bold text-xl">{section.label}</span>
+                          <div className="p-2.5 bg-white text-slate-400 rounded-xl transition-all group-hover:bg-[#FF5C5C] group-hover:text-white shadow-sm ring-1 ring-slate-200 group-hover:ring-[#FF5C5C]">
+                            {section.icon}
+                          </div>
+                          <span className="font-bold text-xl text-slate-700 group-hover:text-[#FF5C5C] transition-colors">{section.label}</span>
                         </div>
                         <ChevronRight size={24} className="transition-opacity opacity-0 group-hover:opacity-100" />
                       </Link>

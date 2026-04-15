@@ -9,11 +9,11 @@ import { supabase } from '@/app/lib/supabase';
 
 // Asegúrate de que esta ruta apunte bien a donde tienes tu componente Buscador
 import Buscador from '../proyectos/Buscador';
-import ConfigModal from './ConfigModal';
+import AccountModal from './AccountModal';
 
 export default function Header({ user, onLogout, onSearch, onMenuClick, isSidebarExpanded, title = "Ocurrencias" }) {
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showConfigModal, setShowConfigModal] = useState(false);
+  const [showAccountModal, setShowAccountModal] = useState(false);
   const [localUser, setLocalUser] = useState(null);
 
   useEffect(() => {
@@ -95,7 +95,7 @@ export default function Header({ user, onLogout, onSearch, onMenuClick, isSideba
             <AnimatePresence>
               {showUserMenu && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl z-[70] py-2 border border-slate-100 overflow-hidden">
-                  <button onClick={() => { setShowUserMenu(false); setShowConfigModal(true); }} className="flex items-center gap-3 px-4 py-3 text-sm w-full text-slate-700 font-bold hover:bg-slate-50 transition-colors">
+                  <button onClick={() => { setShowUserMenu(false); setShowAccountModal(true); }} className="flex items-center gap-3 px-4 py-3 text-sm w-full text-slate-700 font-bold hover:bg-slate-50 transition-colors">
                     <Settings size={16} /> Configurar cuenta
                   </button>
                   <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-3 text-sm w-full text-red-500 font-bold hover:bg-red-50 transition-colors">
@@ -113,9 +113,9 @@ export default function Header({ user, onLogout, onSearch, onMenuClick, isSideba
         )}
       </div>
 
-      <ConfigModal 
-        isOpen={showConfigModal} 
-        onClose={() => setShowConfigModal(false)} 
+      <AccountModal 
+        isOpen={showAccountModal} 
+        onClose={() => setShowAccountModal(false)} 
         user={activeUser}
         onUpdate={(updatedUser) => setLocalUser(updatedUser)}
       />

@@ -65,7 +65,7 @@ export default function LoginPage() {
                 required
                 className="w-full p-3 rounded-full bg-white/70 outline-none border-none shadow-sm focus:ring-2 focus:ring-[#DB7093]" 
               />
-              <p className="text-xs text-gray-600 mt-2 ml-2 cursor-pointer hover:underline">Olvidé mi contraseña</p>
+              <p onClick={() => alert("Próximas actualizaciones: implementación de hashing en las contraseñas, recuperación de cuenta y medidas de seguridad extendidas avanzadas.")} className="text-xs text-gray-600 mt-2 ml-2 cursor-pointer hover:underline text-left">Olvidé mi contraseña</p>
             </div>
 
             <div className="mt-4 flex flex-col items-start">

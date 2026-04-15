@@ -251,9 +251,12 @@ export default function MundoPage() {
               <motion.div key="detalle-mundo" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex flex-col lg:flex-row gap-8">
 
                 <div className="w-full lg:w-64 flex-shrink-0 space-y-6">
-                  <button onClick={handleCloseDetail} className="flex items-center gap-2 text-slate-500 hover:text-[#FF5C5C] font-bold mb-6 transition-colors">
-                    <ChevronLeft size={20} /> Volver a Mundos
-                  </button>
+                    <Link 
+                      href="/proyectos"
+                      className="flex items-center gap-2 text-slate-500 hover:text-[#FF5C5C] font-bold mb-6 transition-colors"
+                    >
+                      <ChevronLeft size={20} /> Volver a Proyectos
+                    </Link>
 
                   <div className="bg-white rounded-[32px] p-4 shadow-sm border border-slate-100">
                     <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest px-4 mb-3">Módulos del Mundo</h3>
