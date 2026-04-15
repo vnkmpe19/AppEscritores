@@ -171,16 +171,16 @@ export default function HistoryModule({ proyectoId }) {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 md:space-y-12 pb-20">
-      <div className="bg-white p-6 md:p-10 rounded-[30px] md:rounded-[40px] shadow-xl border border-slate-100 relative overflow-hidden group">
+      <div className="bg-white p-5 md:p-7 rounded-[30px] md:rounded-[40px] shadow-xl border border-slate-100 relative overflow-hidden group">
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#E8F5A2]/30 rounded-full blur-3xl pointer-events-none" />
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-5 relative z-10">
-          <div className="p-3 md:p-4 bg-[#E8F5A2]/50 text-slate-800 rounded-2xl shadow-inner">
-            <BookOpen size={32} className="w-8 h-8 md:w-auto md:h-auto" />
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 relative z-10">
+          <div className="p-2 md:p-3 bg-[#E8F5A2]/50 text-slate-800 rounded-xl shadow-inner">
+            <BookOpen size={24} className="w-6 h-6 md:w-auto md:h-auto" />
           </div>
           <div>
-            <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">Cronología del Mundo</h2>
-            <p className="text-slate-400 text-sm md:text-lg mt-1 max-w-3xl leading-relaxed">
-              Explora los hilos del tiempo, las grandes figuras que forjaron la historia y los artefactos que dejaron atrás.
+            <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Cronología del Mundo</h2>
+            <p className="text-slate-400 text-xs md:text-sm mt-0.5 max-w-3xl leading-relaxed">
+              Explora los hilos del tiempo y las grandes figuras de la historia.
             </p>
           </div>
         </div>

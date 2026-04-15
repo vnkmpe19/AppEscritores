@@ -256,13 +256,13 @@ export default function RedDeRelaciones({ proyectoId }) {
 
       {error && <ErrorBanner message={error} onRetry={() => { setError(null); fetchAll(); }} />}
 
-     <div className="flex flex-col gap-5 bg-white p-6 sm:p-10 rounded-[28px] sm:rounded-[40px] shadow-xl border border-slate-100 relative overflow-hidden">
+     <div className="flex flex-col gap-4 bg-white p-5 md:p-7 rounded-[28px] sm:rounded-[40px] shadow-xl border border-slate-100 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-40 h-40 bg-[#BFD7ED]/20 blur-3xl rounded-full pointer-events-none" />
-        <div className="flex items-center gap-4 relative z-10">
-          <div className="p-3 sm:p-4 bg-[#BFD7ED]/50 rounded-2xl shadow-inner shrink-0"><Network size={28} /></div>
+        <div className="flex items-center gap-3 relative z-10">
+          <div className="p-2.5 md:p-3 bg-[#BFD7ED]/50 rounded-xl shadow-inner shrink-0"><Network size={24} /></div>
           <div>
-            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-none">Red de Relaciones</h2>
-            <p className="text-slate-400 text-sm sm:text-lg mt-1">Visualización estratégica de facciones, alianzas y conflictos.</p>
+            <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-none">Red de Relaciones</h2>
+            <p className="text-slate-400 text-xs md:text-sm mt-1">Visualización estratégica de facciones y conflictos.</p>
           </div>
         </div>
         <div className="relative z-10 overflow-x-auto -mx-1 px-1">

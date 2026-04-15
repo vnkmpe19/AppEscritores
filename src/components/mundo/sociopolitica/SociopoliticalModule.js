@@ -218,15 +218,15 @@ export default function SociopoliticalModule({ proyectoId }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 sm:space-y-12 pb-20 px-2 sm:px-0">
       
-      <div className="bg-white p-6 md:p-10 rounded-[30px] md:rounded-[40px] border border-slate-100 shadow-xl relative overflow-hidden group">
+      <div className="bg-white p-5 md:p-7 rounded-[30px] md:rounded-[40px] border border-slate-100 shadow-xl relative overflow-hidden group">
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#FF5C5C]/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-5 relative z-10">
-          <div className="p-3 md:p-4 bg-[#FFB7C5]/50 text-slate-800 rounded-2xl shadow-inner">
-            <Users size={32} className="w-8 h-8 md:w-auto md:h-auto" />
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 relative z-10">
+          <div className="p-2 md:p-3 bg-[#FFB7C5]/50 text-slate-800 rounded-xl shadow-inner">
+            <Users size={24} className="w-6 h-6 md:w-auto md:h-auto" />
           </div>
           <div>
-            <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">Estructura Sociopolítica</h2>
-            <p className="text-slate-400 text-sm md:text-lg mt-1 max-w-2xl leading-relaxed">Define el marco legal, social y económico que rige a tu civilización. Elige cómo se distribuye el poder y quiénes sostienen la corona.</p>
+            <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Estructura Sociopolítica</h2>
+            <p className="text-slate-400 text-xs md:text-sm mt-0.5 max-w-xl leading-relaxed">Define el marco legal, social y económico que rige a tu civilización.</p>
           </div>
         </div>
       </div>
@@ -240,8 +240,8 @@ export default function SociopoliticalModule({ proyectoId }) {
         <>
           {/* TIPOS DE GOBIERNO */}
           <section>
-            <div className="flex justify-between items-center mb-6 sm:mb-8">
-              <h3 className="text-xl sm:text-2xl font-black text-slate-800">Tipos de Gobierno</h3>
+            <div className="flex justify-between items-center mb-5 sm:mb-6">
+              <h3 className="text-lg md:text-xl font-black text-slate-800">Tipos de Gobierno</h3>
               <button onClick={() => abrirModal('gobierno', 'Nuevo Tipo de Gobierno')} className="px-4 py-2 sm:px-5 sm:py-2.5 bg-[#BFD7ED] text-slate-800 rounded-xl font-bold text-xs sm:text-sm shadow-md hover:scale-105 transition-transform flex items-center gap-2">
                 <Plus size={14} className="sm:w-4 sm:h-4"/> Añadir <span className="hidden sm:inline">Tipo</span>
               </button>
@@ -267,10 +267,11 @@ export default function SociopoliticalModule({ proyectoId }) {
 
           {/* JERARQUÍA SOCIAL */}
           <section>
-            <div className="flex items-center gap-3 mb-6 sm:mb-8">
-              <h3 className="text-xl sm:text-2xl font-black text-slate-800">Jerarquía Social</h3>
+            <div className="flex items-center gap-3 mb-5 sm:mb-6">
+              <h3 className="text-lg md:text-xl font-black text-slate-800">Jerarquía Social</h3>
             </div>
-            <div className="bg-slate-50 rounded-[30px] sm:rounded-[40px] p-4 sm:p-12 border border-slate-100 overflow-x-auto min-h-[400px] sm:min-h-[500px] flex justify-center shadow-inner custom-scrollbar relative">
+            <div className="bg-slate-50 rounded-[30px] sm:rounded-[40px] p-3 sm:p-8 border border-slate-100 overflow-x-auto min-h-[300px] sm:min-h-[400px] flex justify-center shadow-inner custom-scrollbar relative">
+
               <div className="min-w-max flex flex-col items-center gap-12 sm:gap-16 py-4">
                 {arbolJerarquia.length === 0 ? (
                   <div className="flex flex-col items-center gap-4 mt-10">
@@ -302,9 +303,9 @@ export default function SociopoliticalModule({ proyectoId }) {
             
             {/* LEyes y justicia */}
             <section>
-              <div className="flex items-center gap-3 mb-6 sm:mb-8">
-                <Scale className="text-[#FF5C5C] w-6 h-6 sm:w-7 sm:h-7" />
-                <h3 className="text-xl sm:text-2xl font-black text-slate-800">Leyes y Justicia</h3>
+              <div className="flex items-center gap-3 mb-5 sm:mb-6">
+                <Scale className="text-[#FF5C5C] w-5 h-5 md:w-6 md:h-6" />
+                <h3 className="text-lg md:text-xl font-black text-slate-800">Leyes y Justicia</h3>
               </div>
               <div className="bg-white p-5 sm:p-8 rounded-[28px] sm:rounded-[32px] border border-slate-100 shadow-xl">
                 <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
@@ -337,9 +338,9 @@ export default function SociopoliticalModule({ proyectoId }) {
             </section>
 
             <section>
-              <div className="flex items-center gap-3 mb-6 sm:mb-8">
-                <TrendingUp className="text-[#F97316] w-6 h-6 sm:w-7 sm:h-7" />
-                <h3 className="text-xl sm:text-2xl font-black text-slate-800">Motores Económicos</h3>
+              <div className="flex items-center gap-3 mb-5 sm:mb-6">
+                <TrendingUp className="text-[#F97316] w-5 h-5 md:w-6 md:h-6" />
+                <h3 className="text-lg md:text-xl font-black text-slate-800">Motores Económicos</h3>
               </div>
               <div className="space-y-4">
                 {economia.length === 0 && <p className="text-center text-slate-400 font-bold bg-white p-6 rounded-3xl border border-slate-100 shadow-sm text-sm">La economía aún no fluye.</p>}
@@ -448,7 +449,7 @@ function TarjetaGobierno({ titulo, descripcion, icono, activo, alHacerClic, alEd
   return (
     <div 
       onClick={alHacerClic} 
-      className={`p-4 sm:p-5 md:p-6 rounded-[24px] sm:rounded-[32px] border-2 transition-all cursor-pointer group relative overflow-hidden flex flex-col h-full ${
+      className={`p-3 sm:p-4 md:p-5 rounded-[24px] sm:rounded-[32px] border-2 transition-all cursor-pointer group relative overflow-hidden flex flex-col h-full ${
         activo 
           ? 'bg-[#BFD7ED]/10 border-[#BFD7ED] shadow-[0_0_20px_rgba(191,215,237,0.3)] sm:shadow-[0_0_30px_rgba(191,215,237,0.3)] scale-[1.02] sm:scale-105' 
           : 'bg-white border-slate-100 hover:border-slate-200'
@@ -474,8 +475,8 @@ function TarjetaGobierno({ titulo, descripcion, icono, activo, alHacerClic, alEd
         )}
       </div>
       
-      <h4 className="text-base sm:text-lg font-black text-slate-800 mb-1.5 sm:mb-2 pr-12 sm:pr-0">{titulo}</h4>
-      <p className="text-slate-500 text-[10px] sm:text-xs leading-relaxed flex-1 line-clamp-3 sm:line-clamp-none">{descripcion}</p>
+      <h4 className="text-sm sm:text-base font-black text-slate-800 mb-1.5 sm:mb-2 pr-12 sm:pr-0">{titulo}</h4>
+      <p className="text-slate-500 text-[9px] sm:text-[10px] leading-relaxed flex-1 line-clamp-3 sm:line-clamp-none">{descripcion}</p>
     </div>
   );
 }
@@ -483,7 +484,8 @@ function TarjetaGobierno({ titulo, descripcion, icono, activo, alHacerClic, alEd
 function NodoJerarquia({ nodo, alAgregar, alEditar, alEliminar, esRaiz = false }) {
   return (
     <div className="flex flex-col items-center relative">
-      <motion.div className={`w-32 sm:w-44 md:w-56 p-3 sm:p-5 md:p-6 rounded-[20px] md:rounded-[24px] border-2 flex flex-col items-center text-center relative z-10 transition-all group hover:scale-105 cursor-default ${esRaiz ? 'bg-[#D4C1EC] border-[#D4C1EC] text-slate-900 shadow-[0_10px_30px_rgba(212,193,236,0.5)]' : 'bg-white border-slate-100 text-slate-800 shadow-sm hover:shadow-md'}`}>
+      <motion.div className={`w-28 sm:w-36 md:w-48 p-2.5 sm:p-4 md:p-5 rounded-[18px] md:rounded-[22px] border-2 flex flex-col items-center text-center relative z-10 transition-all group hover:scale-105 cursor-default ${esRaiz ? 'bg-[#D4C1EC] border-[#D4C1EC] text-slate-900 shadow-[0_10px_30px_rgba(212,193,236,0.5)]' : 'bg-white border-slate-100 text-slate-800 shadow-sm hover:shadow-md'}`}>
+
 
         
         <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 md:top-3 md:right-3 flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">

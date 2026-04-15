@@ -99,16 +99,16 @@ export default function CulturesModule({ proyectoId }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-16 pb-20">
       
-      <div className="bg-white p-10 rounded-[40px] border border-slate-100 shadow-xl relative overflow-hidden">
+      <div className="bg-white p-5 md:p-7 rounded-[30px] md:rounded-[40px] border border-slate-100 shadow-xl relative overflow-hidden">
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#D4C1EC]/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="flex items-center gap-5 relative z-10">
-          <div className="p-4 bg-[#D4C1EC]/50 text-slate-800 rounded-2xl shadow-inner">
-            <Globe size={32} />
+        <div className="flex items-center gap-3 md:gap-4 relative z-10">
+          <div className="p-2 md:p-3 bg-[#D4C1EC]/50 text-slate-800 rounded-xl shadow-inner">
+            <Globe size={24} className="w-6 h-6 md:w-auto md:h-auto" />
           </div>
           <div>
-            <h2 className="text-5xl font-black text-slate-900 tracking-tight">Cultura</h2>
-            <p className="text-slate-400 text-lg mt-1 max-w-2xl">
-              Explora las etnias, tradiciones, ritos sagrados que dan vida a los habitantes de tu mundo.
+            <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Cultura</h2>
+            <p className="text-slate-400 text-xs md:text-sm mt-0.5 max-w-2xl leading-relaxed">
+              Explora las etnias, tradiciones y ritos sagrados de tu mundo.
             </p>
           </div>
         </div>
