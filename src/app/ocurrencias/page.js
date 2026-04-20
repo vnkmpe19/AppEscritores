@@ -153,19 +153,15 @@ export default function OcurrenciasPage() {
   const onDragEnd = async (result) => {
     if (!result.destination) return;
 
-    // Reordenamos dentro de la lista filtrada
     const reordenadas = Array.from(notasFiltradas);
     const [moved] = reordenadas.splice(result.source.index, 1);
     reordenadas.splice(result.destination.index, 0, moved);
 
-    // Reconstruimos el array completo: las notas que NO están en el filtro
-    // conservan su posición, y las reordenadas reemplazan sus posiciones en orden
     const filtradas_ids = new Set(reordenadas.map(n => n.id));
     const noFiltradas = notes.filter(n => !filtradas_ids.has(n.id));
     const nuevasNotes = [...reordenadas, ...noFiltradas];
     setNotes(nuevasNotes);
 
-    // Persistir solo los ordenes de las notas que se movieron
     const updates = reordenadas.map((item, index) => ({ id: item.id, orden: index }));
     for (const update of updates) {
       await supabase.from('ocurrencias').update({ orden: update.orden }).eq('id', update.id);

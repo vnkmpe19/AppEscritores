@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { supabase } from '../lib/supabase'; // Asegúrate de tu ruta
+import { supabase } from '../lib/supabase';
 import { 
   ChevronRight, Trash2, Edit, Plus, X, LayoutGrid, BookOpen, Image as ImageIcon, ChevronLeft, Search, User, Edit3, Globe, Lightbulb
 } from 'lucide-react';
