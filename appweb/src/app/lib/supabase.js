@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder";
 
 // Log values during build to diagnose Vercel/Local build issues
 if (typeof window === 'undefined') {
@@ -12,12 +12,10 @@ if (typeof window === 'undefined') {
   });
 }
 
-const isSafeToInit = supabaseUrl && 
-                     supabaseAnonKey && 
-                     supabaseUrl !== "undefined" && 
-                     supabaseUrl.startsWith("http");
+const isSafeToInit = supabaseUrl &&
+  supabaseAnonKey &&
+  supabaseUrl !== "undefined" &&
+  supabaseUrl.startsWith("http");
 
-export const supabase = isSafeToInit
-    ? createClient(supabaseUrl, supabaseAnonKey)
-    : null;
-
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
