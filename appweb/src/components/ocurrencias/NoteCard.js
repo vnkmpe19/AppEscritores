@@ -1,9 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
 import { MoreVertical, FileText, FileImage, FileDown, Trash2 } from 'lucide-react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import { saveAs } from 'file-saver';
+// Importaciones dinámicas dentro de las funciones para evitar errores de SSR en Vercel/Build
 
 export default function NoteCard({ note, onDelete, onToggleItem }) {
   const [showMenu, setShowMenu] = useState(false);
@@ -19,25 +17,43 @@ export default function NoteCard({ note, onDelete, onToggleItem }) {
 
   const exportPDF = async () => {
     setShowMenu(false);
-    const canvas = await html2canvas(noteRef.current);
-    const pdf = new jsPDF();
-    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, 190, 0);
-    pdf.save(`${note.title}.pdf`);
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const jsPDF = (await import('jspdf')).default;
+      
+      const canvas = await html2canvas(noteRef.current);
+      const pdf = new jsPDF();
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, 190, 0);
+      pdf.save(`${note.title}.pdf`);
+    } catch (err) {
+      console.error("Error al exportar PDF:", err);
+      alert("No se pudo generar el PDF. Inténtalo de nuevo.");
+    }
   };
 
   const exportPNG = async () => {
     setShowMenu(false);
-    const canvas = await html2canvas(noteRef.current);
-    const link = document.createElement('a');
-    link.download = `${note.title}.png`;
-    link.href = canvas.toDataURL();
-    link.click();
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(noteRef.current);
+      const link = document.createElement('a');
+      link.download = `${note.title}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    } catch (err) {
+      console.error("Error al exportar PNG:", err);
+    }
   };
 
-  const exportDOC = () => {
+  const exportDOC = async () => {
     setShowMenu(false);
-    const content = `${note.title}\n\n${note.content || note.items?.map(i => `- ${i.text}`).join('\n')}`;
-    saveAs(new Blob([content], { type: "application/msword" }), `${note.title}.doc`);
+    try {
+      const { saveAs } = await import('file-saver');
+      const content = `${note.title}\n\n${note.content || note.items?.map(i => `- ${i.text}`).join('\n')}`;
+      saveAs(new Blob([content], { type: "application/msword" }), `${note.title}.doc`);
+    } catch (err) {
+      console.error("Error al exportar DOC:", err);
+    }
   };
 
   return (
