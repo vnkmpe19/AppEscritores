@@ -19,16 +19,31 @@ export default function LoginPage() {
     setCargando(true);
     setError(null);
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
+    try {
+      if (!supabase) {
+        throw new Error("La conexión con la base de datos no está configurada. Verifica las variables de entorno.");
+      }
 
-    if (error) {
-      setError("Correo o contraseña incorrectos."); 
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (authError) {
+        // Manejo específico de errores de Supabase Auth
+        if (authError.message === "Invalid login credentials") {
+          setError("Correo o contraseña incorrectos.");
+        } else {
+          setError(authError.message);
+        }
+      } else if (data?.user) {
+        router.push('/home'); 
+      }
+    } catch (err) {
+      console.error("Error crítico en login:", err);
+      setError(err.message || "Ocurrió un error inesperado al iniciar sesión.");
+    } finally {
       setCargando(false);
-    } else {
-      router.push('/home'); 
     }
   };
 

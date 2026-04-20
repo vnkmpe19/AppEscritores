@@ -54,60 +54,64 @@ export default function RegistroPage() {
     setError(null);
     setMensajeExito(null);
 
-    // 1. Registro en Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: {
-          username: nombreUsuario,
+    try {
+      if (!supabase) {
+        throw new Error("La conexión con la base de datos no está configurada. Verifica las variables de entorno.");
+      }
+
+      // 1. Registro en Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            username: nombreUsuario,
+          }
+        }
+      });
+
+      if (authError) {
+        throw new Error(authError.message);
+      }
+
+      if (authData?.user) {
+        // 2. Insertar perfil público en la tabla 'usuarios'
+        const { error: userError } = await supabase
+          .from('usuarios')
+          .insert([{
+            id: authData.user.id,
+            nombre_usuario: nombreUsuario
+          }]);
+
+        if (userError && userError.code !== '23505') { 
+          console.warn("Aviso sobre tabla usuarios:", userError);
+        }
+
+        // 3. Crear un Proyecto por defecto
+        const { error: projError } = await supabase
+          .from('proyectos')
+          .insert([{
+            id_usuario: authData.user.id,
+            titulo: 'Mi Primer Universo',
+            descripcion: 'Un lienzo en blanco para comenzar tus historias.',
+            color: '#BDD8E9'
+          }]);
+
+        if (projError) {
+           console.warn("No se pudo crear proyecto inicial:", projError);
+        }
+
+        // Si Supabase exige verificación por correo, la sesión será null
+        if (!authData.session) {
+          setMensajeExito("¡Cuenta creada! Revisa tu bandeja de entrada o SPAM para confirmar tu correo.");
+        } else {
+          router.push('/home'); 
         }
       }
-    });
-
-    if (authError) {
-      setError("Error al crear cuenta: " + authError.message);
-      setCargando(false);
-      return;
-    }
-
-    if (authData?.user) {
-      // 2. Insertar perfil público en la tabla 'usuarios'
-      // Tratamos de hacerlo manualmente por si no tienes Triggers en tu BD
-      const { error: userError } = await supabase
-        .from('usuarios')
-        .insert([{
-          id: authData.user.id,
-          nombre_usuario: nombreUsuario
-        }]);
-
-      if (userError && userError.code !== '23505') { 
-        console.warn("Aviso sobre tabla usuarios (puede ignorarse si tienes un Trigger):", userError);
-      }
-
-      // 3. Crear un Proyecto por defecto para que la app funcione correctamente
-      const { error: projError } = await supabase
-        .from('proyectos')
-        .insert([{
-          id_usuario: authData.user.id,
-          titulo: 'Mi Primer Universo',
-          descripcion: 'Un lienzo en blanco para comenzar tus historias.',
-          color: '#BDD8E9'
-        }]);
-
-      if (projError) {
-         console.warn("No se pudo crear proyecto inicial:", projError);
-      }
-
-      // Si Supabase exige verificación por correo, la sesión será null
-      if (!authData.session) {
-        setMensajeExito("¡Cuenta creada! Revisa tu bandeja de entrada o SPAM para confirmar tu correo.");
-        setCargando(false);
-      } else {
-        alert("¡Bienvenido a AppEscritores!");
-        router.push('/home'); // o '/mundo' dependiendo de tu flujo
-      }
-    } else {
+    } catch (err) {
+      console.error("Error crítico en registro:", err);
+      setError(err.message || "Ocurrió un error inesperado al crear la cuenta.");
+    } finally {
       setCargando(false);
     }
   };
