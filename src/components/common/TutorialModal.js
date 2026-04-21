@@ -68,21 +68,21 @@ export default function TutorialModal({ isOpen, onClose }) {
   const [step, setStep] = useState(0);
   const router = useRouter();
 
-  // Navigate to the section for the current step
-  useEffect(() => {
-    if (isOpen && STEPS[step]?.link) {
-      router.push(STEPS[step].link);
-    }
-  }, [step, isOpen]);
-
-  // Reset step when reopened
+  // Resetear al paso 0 cuando se abre
   useEffect(() => {
     if (isOpen) setStep(0);
   }, [isOpen]);
 
+  // Se eliminó el useEffect que hacía router.push automático 
+  // para evitar que la página cambie sola mientras ves el tutorial.
+
   const handleClose = () => {
+    // Marcamos como visto
     localStorage.setItem('escrimundo_tutorial_seen', 'true');
-    router.push('/home');
+    
+    // Redirigimos al Login en lugar de al Home
+    router.push('/login'); 
+    
     onClose();
   };
 
@@ -106,7 +106,7 @@ export default function TutorialModal({ isOpen, onClose }) {
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[200] flex items-end md:items-center justify-center p-4 md:p-0 bg-slate-900/40 backdrop-blur-sm pointer-events-auto"
         >
-          {/* Skip — top right */}
+          {/* Botón Saltar modificado para ir al Login */}
           <button
             onClick={handleClose}
             className="absolute top-5 right-5 flex items-center gap-1.5 text-white/80 hover:text-white text-xs font-black uppercase tracking-widest transition-colors"
@@ -122,7 +122,6 @@ export default function TutorialModal({ isOpen, onClose }) {
             transition={{ duration: 0.25 }}
             className={`bg-gradient-to-b ${current.color} w-full max-w-md rounded-t-[40px] md:rounded-[40px] shadow-2xl border border-white/70 p-10 flex flex-col items-center text-center`}
           >
-            {/* Progress dots */}
             <div className="flex gap-1.5 mb-8">
               {STEPS.map((_, i) => (
                 <button
@@ -135,22 +134,18 @@ export default function TutorialModal({ isOpen, onClose }) {
               ))}
             </div>
 
-            {/* Icon */}
             <div className="mb-6 flex items-center justify-center h-16">
               {current.icon}
             </div>
 
-            {/* Title */}
             <h2 className="text-3xl font-serif font-black text-slate-900 mb-4 leading-tight">
               {current.title}
             </h2>
 
-            {/* Description */}
             <p className="text-slate-600 font-medium text-sm leading-relaxed mb-10">
               {current.description}
             </p>
 
-            {/* Navigation */}
             <div className="flex items-center gap-4 w-full">
               <button
                 onClick={handlePrev}
