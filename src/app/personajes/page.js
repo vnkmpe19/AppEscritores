@@ -1,6 +1,6 @@
 "use client";
 export const dynamic = 'force-dynamic';
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Sidebar from '@/components/common/Sidebar';
 import Header from '@/components/common/Header';
 import CharacterModule from '@/components/CharacterModule';
@@ -17,7 +17,9 @@ export default function PersonajesPage() {
         <Header title="Personajes" onMenuClick={() => setIsSidebarExpanded(!isSidebarExpanded)} isSidebarExpanded={isSidebarExpanded} />
 
         <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col relative pt-4 overflow-hidden">
-          <CharacterModule />
+          <Suspense fallback={<div className="flex items-center justify-center p-20 font-bold text-slate-400">Cargando personajes...</div>}>
+            <CharacterModule />
+          </Suspense>
         </div>
       </main>
 

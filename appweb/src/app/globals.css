@@ -1,0 +1,29 @@
+@import "tailwindcss";
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+/* Estilo para la barra de desplazamiento horizontal */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 8px; /* Grosor de la barra */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #FDF5F5; /* Color del fondo de la barra */
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #FFB7C5; /* Color del "carritoo" (rosa pastel) */
+  border-radius: 10px;
+  border: 2px solid #FDF5F5; /* Espacio alrededor del carrito */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #F497A9; /* Color al pasar el mouse */
+}
